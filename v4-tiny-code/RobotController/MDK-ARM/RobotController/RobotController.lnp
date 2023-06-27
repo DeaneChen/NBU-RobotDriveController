@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp
+"robotcontroller\startup_stm32f407xx.o"
+"robotcontroller\main.o"
+"robotcontroller\gpio.o"
+"robotcontroller\stm32f4xx_it.o"
+"robotcontroller\stm32f4xx_hal_msp.o"
+"robotcontroller\stm32f4xx_hal_tim.o"
+"robotcontroller\stm32f4xx_hal_tim_ex.o"
+"robotcontroller\stm32f4xx_hal_rcc.o"
+"robotcontroller\stm32f4xx_hal_rcc_ex.o"
+"robotcontroller\stm32f4xx_hal_flash.o"
+"robotcontroller\stm32f4xx_hal_flash_ex.o"
+"robotcontroller\stm32f4xx_hal_flash_ramfunc.o"
+"robotcontroller\stm32f4xx_hal_gpio.o"
+"robotcontroller\stm32f4xx_hal_dma_ex.o"
+"robotcontroller\stm32f4xx_hal_dma.o"
+"robotcontroller\stm32f4xx_hal_pwr.o"
+"robotcontroller\stm32f4xx_hal_pwr_ex.o"
+"robotcontroller\stm32f4xx_hal_cortex.o"
+"robotcontroller\stm32f4xx_hal.o"
+"robotcontroller\stm32f4xx_hal_exti.o"
+"robotcontroller\system_stm32f4xx.o"
+"robotcontroller\motor_driver.o"
+--strict --scatter "RobotController\RobotController.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "RobotController.map" -o RobotController\RobotController.axf

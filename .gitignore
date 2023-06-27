@@ -50,3 +50,14 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Vscode File
+.vscode
+
+# CubeMX project File
+.mxproject
+
+# Keil Object Files
+**/MDK-ARM/DebugConfig
+**/MDK-ARM/*.uvguix.User
+**/MDK-ARM/*.scvd
