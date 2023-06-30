@@ -1,4 +1,4 @@
---cpu=Cortex-M4.fp.sp --lto
+--cpu=Cortex-M4.fp
 "robotcontroller\startup_stm32f407xx.o"
 "robotcontroller\main.o"
 "robotcontroller\gpio.o"
@@ -23,6 +23,6 @@
 "robotcontroller\motor_driver.o"
 "robotcontroller\led_ws2812.o"
 --strict --scatter "RobotController\RobotController.sct"
---summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "RobotController.map" -o RobotController\RobotController.axf
