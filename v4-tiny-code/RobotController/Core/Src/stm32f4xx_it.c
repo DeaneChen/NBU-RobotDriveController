@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motor_driver.h"
+#include "motor_controller.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,11 +58,11 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
+extern TIM_HandleTypeDef htim6;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -205,20 +206,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles TIM1 break interrupt and TIM9 global interrupt.
-  */
-void TIM1_BRK_TIM9_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 0 */
-
-  /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
-  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
-
-  /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
-}
-
-/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -274,6 +261,20 @@ void TIM5_IRQHandler(void)
   /* USER CODE END TIM5_IRQn 1 */
 }
 
+/**
+  * @brief This function handles TIM6 global interrupt, DAC1 and DAC2 underrun error interrupts.
+  */
+void TIM6_DAC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 
 //定时器结束后回调函数，tim2~5都是编码器相关
@@ -294,10 +295,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if((TIM3->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim3_Update_Count--;
 		else 	MotorDirver_Tim3_Update_Count++;			
 	}
-		else if(htim==(&htim2))
+	else if(htim==(&htim2))
 	{
 		if((TIM2->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim2_Update_Count--;
 		else 	MotorDirver_Tim2_Update_Count++;			
+	}
+	else if(htim==(&htim6))
+	{
+		MotorController_SpeedTunner();
 	}
 }
 /* USER CODE END 1 */
