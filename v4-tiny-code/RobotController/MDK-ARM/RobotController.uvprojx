@@ -856,6 +856,11 @@
               <FileType>1</FileType>
               <FilePath>..\Hardware\delay.c</FilePath>
             </File>
+            <File>
+              <FileName>motor_controller.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\motor_controller.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

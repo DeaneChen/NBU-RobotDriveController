@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motor_driver.h"
+#include "motor_controller.h"
 #include "led.h"
 /* USER CODE END Includes */
 
@@ -97,6 +98,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -105,12 +107,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	//===================电机测试===============
 	MotorDriver_Init(4);
-	MotorDriver_Start(4,4000);
-//	MotorDriver_Start(3,7000);
-//	MotorDriver_Start(2,8000);
-//	MotorDriver_Start(1,4000);
+	MotorDriver_Start(4,PWM_DUTY_LIMIT/2);
+	MotorDriver_Start(3,PWM_DUTY_LIMIT/2);
+	MotorDriver_Start(2,PWM_DUTY_LIMIT/2);
+	MotorDriver_Start(1,PWM_DUTY_LIMIT/2);
 	
 	Encoder_Init(4);
+	
+	//==================电机控制器测试==============
+	MotorController_Init(500*30,82,4);  //初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
+	MotorController_SetAcceleration(800);  //设置加速度值，单位：mm/秒*秒
+	MotorController_Enable(ENABLE);
+	
+	
+	MotorController_SetSpeed(4,300);
+	MotorController_SetSpeed(3,-300);
+	MotorController_SetSpeed(2,400);
+	MotorController_SetSpeed(1,-400);
 	
 	//=================led测试=================
 	FnLED_SetRGB(FnLED2,33,0,0,1);
