@@ -23,6 +23,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "motor_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -275,4 +276,28 @@ void TIM5_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
+//定时器结束后回调函数，tim2~5都是编码器相关
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   
+{
+	if(htim==(&htim4))
+	{
+		if((TIM4->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim4_Update_Count--;  //向下溢出
+		else 	MotorDirver_Tim4_Update_Count++; //向上溢出
+	}
+	else if(htim==(&htim5))
+	{
+		if((TIM5->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim5_Update_Count--;
+		else 	MotorDirver_Tim5_Update_Count++;			
+	}
+	else if(htim==(&htim3))
+	{
+		if((TIM3->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim3_Update_Count--;
+		else 	MotorDirver_Tim3_Update_Count++;			
+	}
+		else if(htim==(&htim2))
+	{
+		if((TIM2->CR1 & TIM_COUNTERMODE_DOWN) == TIM_COUNTERMODE_DOWN) MotorDirver_Tim2_Update_Count--;
+		else 	MotorDirver_Tim2_Update_Count++;			
+	}
+}
 /* USER CODE END 1 */

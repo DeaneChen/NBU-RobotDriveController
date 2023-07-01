@@ -1,41 +1,7 @@
 #include "tim.h"
 #include "gpio.h"
 #include "motor_driver.h"
-
-
-
-
-#define CPU_FREQUENCY_MHZ    168		// STM32时钟主频
-void delay_us(__IO uint32_t delay)  //1us时实际延迟会多0.5us
-{
-    int last, curr, val;
-    int temp;
-
-    while (delay != 0)
-    {
-        temp = delay > 900 ? 900 : delay;// 确定实际延迟的时间，最大延迟为900微秒
-        last = SysTick->VAL; // 获取当前的SysTick计数器的值,它是24位**递减**计数器，频率为内部时钟频率
-        curr = last - CPU_FREQUENCY_MHZ * temp;// 计算出期望的SysTick计数器的值
-        if (curr >= 0)
-        {
-            do
-            {
-                val = SysTick->VAL;
-            }
-            while ((val < last) && (val >= curr));
-        }
-        else
-        {
-            curr += CPU_FREQUENCY_MHZ * 1000;//加上溢出周期，systick为溢出周期为1ms
-            do
-            {
-                val = SysTick->VAL;
-            }
-            while ((val <= last) || (val > curr));
-        }
-        delay -= temp;
-    }
-}
+#include "delay.h"
 
 
 
@@ -234,22 +200,22 @@ void Encoder_Init(uint8_t nEncoderCount)
 		case 4:
 			__HAL_TIM_CLEAR_IT(&htim5, TIM_IT_UPDATE);
 		  HAL_TIM_Base_Start_IT(&htim5);
-			//TIM5->CNT=0;
+			TIM5->CNT=0;
 			HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
 		case 3:
 			__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
 		  HAL_TIM_Base_Start_IT(&htim3);
-			//TIM3->CNT=0;
+			TIM3->CNT=0;
 			HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);
 		case 2:
 			__HAL_TIM_CLEAR_IT(&htim4, TIM_IT_UPDATE);
 		  HAL_TIM_Base_Start_IT(&htim4);
-			//TIM4->CNT=0;
+			TIM4->CNT=0;
 			HAL_TIM_Encoder_Start(&htim4,TIM_CHANNEL_ALL);
 		case 1:
 			__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE);
 		  HAL_TIM_Base_Start_IT(&htim2);
-			//TIM2->CNT=0;
+			TIM2->CNT=0;
 			HAL_TIM_Encoder_Start(&htim2,TIM_CHANNEL_ALL);
 		default:
 			;

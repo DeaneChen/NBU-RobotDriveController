@@ -16,7 +16,7 @@
 */
 
 extern int16_t MotorDirver_Tim4_Update_Count;
-extern int16_t MotorDirver_Tim8_Update_Count;
+extern int16_t MotorDirver_Tim5_Update_Count;
 extern int16_t MotorDirver_Tim3_Update_Count;
 extern int16_t MotorDirver_Tim2_Update_Count;
 

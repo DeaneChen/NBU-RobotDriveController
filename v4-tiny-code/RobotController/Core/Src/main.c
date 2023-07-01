@@ -47,6 +47,9 @@
 
 /* USER CODE BEGIN PV */
 
+//===============±‡¬Î∆˜≤‚ ‘±‰¡ø===============
+volatile int32_t enc1,enc2,enc3,enc4;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,13 +103,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	//===================µÁª˙≤‚ ‘===============
 	MotorDriver_Init(4);
-//	MotorDriver_Start(4,6000);
+	//MotorDriver_Start(4,6000);
 //	MotorDriver_Start(3,7000);
 //	MotorDriver_Start(2,8000);
 //	MotorDriver_Start(1,4000);
 	
 	Encoder_Init(4);
+	
+	//=================led≤‚ ‘=================
 	FnLED_SetRGB(FnLED2,33,0,0,1);
 	uint8_t led_val=0;
   HAL_Delay(1000);
@@ -124,6 +130,13 @@ int main(void)
 		if (led_val>66) 
 			led_val=0;
 		HAL_Delay(50);
+		
+		//==============±‡¬Î∆˜≤‚ ‘≥Ã–Ú================
+		enc1=Encoder_GetEncCount(1);
+		enc2=Encoder_GetEncCount(2);
+		enc3=Encoder_GetEncCount(3);
+		enc4=Encoder_GetEncCount(4);
+
   }
   /* USER CODE END 3 */
 }
