@@ -105,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	//===================µç»ú²âÊÔ===============
 	MotorDriver_Init(4);
-	//MotorDriver_Start(4,6000);
+	MotorDriver_Start(4,4000);
 //	MotorDriver_Start(3,7000);
 //	MotorDriver_Start(2,8000);
 //	MotorDriver_Start(1,4000);
