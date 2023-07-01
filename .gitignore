@@ -62,5 +62,5 @@ dkms.conf
 **/MDK-ARM/*.uvguix.User
 **/MDK-ARM/*.scvd
 #一个是编译器输出，还有一个是编辑过的用户信息不上传
-**/MDK-ARM/RobotController/*
+**/MDK-ARM/RobotController/
 **/MDK-ARM/*.uvguix.*

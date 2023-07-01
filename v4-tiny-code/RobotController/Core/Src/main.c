@@ -25,8 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Led_ws2812.h"
 #include "motor_driver.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,8 +100,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	//Led_set_RGB(0,0,0,33);
-	uint8_t led_val=0;
 	MotorDriver_Init(4);
 //	MotorDriver_Start(4,6000);
 //	MotorDriver_Start(3,7000);
@@ -109,6 +107,10 @@ int main(void)
 //	MotorDriver_Start(1,4000);
 	
 	Encoder_Init(4);
+	FnLED_SetRGB(FnLED2,33,0,0,1);
+	uint8_t led_val=0;
+  HAL_Delay(1000);
+  FnLED_OFF(FnLED2);
   while (1)
   {
     /* USER CODE END WHILE */
@@ -117,11 +119,11 @@ int main(void)
     //LED²âÊÔ³ÌÐò
 		HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
 		
-		//Led_set_RGB(1,0,led_val,0);
+		FnLED_SetRGB(FnLED3,0,led_val,0,1);
 		led_val+=1;
 		if (led_val>66) 
 			led_val=0;
-		HAL_Delay(5);
+		HAL_Delay(50);
   }
   /* USER CODE END 3 */
 }

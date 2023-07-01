@@ -26,7 +26,7 @@
 "robotcontroller\stm32f4xx_hal_tim_ex.o"
 "robotcontroller\system_stm32f4xx.o"
 "robotcontroller\motor_driver.o"
-"robotcontroller\led_ws2812.o"
+"robotcontroller\led.o"
 --strict --scatter "RobotController\RobotController.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
