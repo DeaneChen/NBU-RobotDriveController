@@ -18,6 +18,7 @@ int16_t MotorDirver_Tim2_Update_Count=0;
 //电机初始出，注意case里面没有break，所以会依次启动下面的
 
 //Drv8243 P23页
+//电机初始化函数
 void MotorDriver_Init(uint8_t nMotorCount)
 {
 	// 检查电机数量是否有效
@@ -94,21 +95,25 @@ void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty)
 		case 4:
 			TIM1->CCR2 = nDutySet;
 			HAL_Delay(1);
+			HAL_GPIO_WritePin(M4_OFF_GPIO_Port,M4_OFF_Pin,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(M4_IN1_GPIO_Port,M4_IN1_Pin,GPIO_PIN_SET);
 			break;
 		case 3:
 			TIM1->CCR3 = nDutySet;
 			HAL_Delay(1);		
+			HAL_GPIO_WritePin(M3_OFF_GPIO_Port,M3_OFF_Pin,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(M3_IN1_GPIO_Port,M3_IN1_Pin,GPIO_PIN_SET);
 			break;
 		case 2:
 			TIM1->CCR1 = nDutySet;
-			HAL_Delay(1);			
+			HAL_Delay(1);		
+			HAL_GPIO_WritePin(M2_OFF_GPIO_Port,M2_OFF_Pin,GPIO_PIN_RESET);	
 			HAL_GPIO_WritePin(M2_IN1_GPIO_Port,M2_IN1_Pin,GPIO_PIN_SET);
 			break;
 		case 1:
 			TIM1->CCR4 = nDutySet;
-			HAL_Delay(1);			
+			HAL_Delay(1);		
+			HAL_GPIO_WritePin(M1_OFF_GPIO_Port,M1_OFF_Pin,GPIO_PIN_RESET);	
 			HAL_GPIO_WritePin(M1_IN1_GPIO_Port,M1_IN1_Pin,GPIO_PIN_SET);
 			break;
 		default:
@@ -169,24 +174,41 @@ void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty)
 			;
 	}	
 }
+void MotorDriver_Off(uint8_t nMotor)
+{
+	switch (nMotor)
+	{
+		case 1:
+			HAL_GPIO_WritePin(M1_OFF_GPIO_Port,M1_OFF_Pin,GPIO_PIN_SET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(M2_OFF_GPIO_Port,M2_OFF_Pin,GPIO_PIN_SET);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(M3_OFF_GPIO_Port,M3_OFF_Pin,GPIO_PIN_SET);
+			break;
+		case 4:
+			HAL_GPIO_WritePin(M4_OFF_GPIO_Port,M4_OFF_Pin,GPIO_PIN_SET);
+			break;
+		default:
+			;
+	}	
+}
 
 
+//这个还没改完
 uint8_t MotorDriver_GetMotorState(uint8_t nMotor)
 {
 	switch (nMotor)
 	{
 		case 1:
 			return HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_14);
-//			break;
 		case 2:
 			return HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_10);
-//			break;
 		case 3:
 			return HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_8);
-//			break;
 		case 4:
 			return HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_8);
-//			break;
 		default:
 			return 1;
 	}	
@@ -199,22 +221,22 @@ void Encoder_Init(uint8_t nEncoderCount)
 	{
 		case 4:
 			__HAL_TIM_CLEAR_IT(&htim5, TIM_IT_UPDATE);
-		  HAL_TIM_Base_Start_IT(&htim5);
+			HAL_TIM_Base_Start_IT(&htim5);
 			TIM5->CNT=0;
 			HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
 		case 3:
 			__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
-		  HAL_TIM_Base_Start_IT(&htim3);
+		  	HAL_TIM_Base_Start_IT(&htim3);
 			TIM3->CNT=0;
 			HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);
 		case 2:
 			__HAL_TIM_CLEAR_IT(&htim4, TIM_IT_UPDATE);
-		  HAL_TIM_Base_Start_IT(&htim4);
+		  	HAL_TIM_Base_Start_IT(&htim4);
 			TIM4->CNT=0;
 			HAL_TIM_Encoder_Start(&htim4,TIM_CHANNEL_ALL);
 		case 1:
 			__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE);
-		  HAL_TIM_Base_Start_IT(&htim2);
+		  	HAL_TIM_Base_Start_IT(&htim2);
 			TIM2->CNT=0;
 			HAL_TIM_Encoder_Start(&htim2,TIM_CHANNEL_ALL);
 		default:
