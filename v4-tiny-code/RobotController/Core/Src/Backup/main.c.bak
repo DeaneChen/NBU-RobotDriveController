@@ -19,11 +19,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Led_ws2812.h"
+#include "motor_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,19 +88,38 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_ADC1_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	Led_set_RGB(1,255,0,0);
+	//Led_set_RGB(0,0,0,33);
+	uint8_t led_val=0;
+	MotorDriver_Init(4);
+	MotorDriver_Start(4,6000);
+	MotorDriver_Start(3,7000);
+	MotorDriver_Start(2,8000);
+	MotorDriver_Start(1,4000);
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
+    //LED²âÊÔ³ÌÐò
+		HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
+		
+		//Led_set_RGB(1,0,led_val,0);
+		led_val+=1;
+		if (led_val>66) 
+			led_val=0;
+		HAL_Delay(5);
   }
   /* USER CODE END 3 */
 }

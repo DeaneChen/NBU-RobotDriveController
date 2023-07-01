@@ -33,8 +33,9 @@ void Led_set_RGB(uint8_t id, uint8_t R, uint8_t G, uint8_t B)
 //=====================上面是调用即可的函数，下面是具体的控制实现=================
 
 // 控制需要纳秒级的延迟，n为1时大概延时时间为370ns左右,3时为400ns
-void delay_ns(uint16_t ns)
+void delay_ns(volatile uint16_t ns)
 {
+	ns=ns;
 	while (ns--);
 }
 
@@ -44,15 +45,15 @@ void Data0()
 	LedIO_Set;
 	delay_ns(1);
 	LedIO_Reset;
-	delay_ns(7);
+	delay_ns(8);
 }
 // 发送WS2812定义的”1“
 void Data1()
 {
 	LedIO_Set;
-	delay_ns(6);
-	LedIO_Reset;
 	delay_ns(7);
+	LedIO_Reset;
+	delay_ns(8);
 }
 // 发送WS2812 8位数据
 void send_data(uint8_t dat)
