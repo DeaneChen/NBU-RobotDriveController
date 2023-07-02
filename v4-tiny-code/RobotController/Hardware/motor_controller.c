@@ -102,7 +102,6 @@ void MotorController_SpeedTunner(void)
 	//循环设定的电机数量
 	for (int i = 0; i < controller.MotorEnabledCount; i++)
 	{
-		// 获取当前处理的电机
 		Motor *motor = &controller.Motors[i];
 		int16_t nSpeedExpect;
 
@@ -115,7 +114,6 @@ void MotorController_SpeedTunner(void)
 			if (nSpeedExpect > motor->SpeedSet)
 				nSpeedExpect = motor->SpeedSet;
 		}
-		// 如果当前速度大于设定速度
 		else if (motor->SpeedCur > motor->SpeedSet)
 		{   // 预期速度减少一个加速度值
 			nSpeedExpect = motor->SpeedCur - controller.Acc;
@@ -130,13 +128,12 @@ void MotorController_SpeedTunner(void)
 		}
 		// 更新当前速度为预期速度
 		motor->SpeedCur = nSpeedExpect;
-		// 获取编码器计数值
-		int32_t nCnt = Encoder_GetEncCount(i + 1);
+
+		int32_t nCnt = Encoder_GetEncCount(i + 1);		// 获取编码器计数值
 		// 根据编码器计数值计算当前速度
 		float fSpeedCur = 3.14 * (nCnt - motor->EncCnt) * controller.WheelDiameter * 1000 / (controller.EncoderResolution * 4 * MOTOR_CONTROLLER_PERIOD);
-		// 计算速度误差
-		float fError = nSpeedExpect - fSpeedCur;
 
+		float fError = nSpeedExpect - fSpeedCur;		// 计算速度误差
 		// 根据速度误差计算PWM增量
 		int16_t pwmDelta = controller.KP * (fError - motor->SpeedErr1) + controller.KI * (fError + motor->SpeedErr1) / 2 + controller.KD * (fError - 2 * motor->SpeedErr1 + motor->SpeedErr2);
 		// 根据PWM增量更新PWM设定值

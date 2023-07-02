@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "motor_driver.h"
 #include "motor_controller.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,6 +64,7 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim6;
+extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -248,6 +250,20 @@ void TIM4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_IRQn 0 */
+
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
+  /* USER CODE END USART3_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM5 global interrupt.
   */
 void TIM5_IRQHandler(void)
@@ -305,4 +321,33 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		MotorController_SpeedTunner();
 	}
 }
+
+
+
+
+
+//UART串口通信的中断函数
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(huart);
+
+	
+	if(huart->Instance==USART3){
+
+		USART_GetChar(&uart3Data,uart3Data.aRxBuffer);//字节数据保存到缓冲区中
+		HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3Data.aRxBuffer, 1);   //再开启接收中断
+		
+		if(uart3Data.USART_FrameFlag==1){//如果数据帧完整，则发回数据
+				HAL_UART_Transmit(&huart3, (uint8_t *)&uart3Data.RxBuffer, FRAME_BYTE_LENGTH,10); //将收到的信息发送出去
+				while(HAL_UART_GetState(&huart3) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
+				uart3Data.Rx_Cnt = 0;
+				uart3Data.USART_FrameFlag=0;
+		}
+		
+	}
+}
+
+
+
 /* USER CODE END 1 */
