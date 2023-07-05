@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "config.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define TIM_MOTOR_PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
+#define TIM_MOTOR_TIM_ENCOER_ARR MOTOR_TIM_ENCODER_ARR
 #define M1_IPROPI_Pin GPIO_PIN_4
 #define M1_IPROPI_GPIO_Port GPIOC
 #define M3_IPROPI_Pin GPIO_PIN_5

@@ -4,27 +4,27 @@
 #include "delay.h"
 
 
-
-//��֪���ò���OFF����
-//			HAL_GPIO_WritePin(M1_OFF_GPIO_Port,M1_OFF_Pin,GPIO_PIN_RESET);
-
-int16_t MotorDirver_Tim4_Update_Count=0;
-int16_t MotorDirver_Tim5_Update_Count=0;
-int16_t MotorDirver_Tim3_Update_Count=0;
-int16_t MotorDirver_Tim2_Update_Count=0;
+__IO int16_t MotorDirver_Tim4_Update_Count = 0;
+__IO int16_t MotorDirver_Tim5_Update_Count = 0;
+__IO int16_t MotorDirver_Tim3_Update_Count = 0;
+__IO int16_t MotorDirver_Tim2_Update_Count = 0;
 
 #define LedIO_Reset HAL_GPIO_WritePin(FnLEDn_GPIO_Port, FnLEDn_Pin, GPIO_PIN_RESET)
 #define LedIO_Set HAL_GPIO_WritePin(FnLEDn_GPIO_Port, FnLEDn_Pin, GPIO_PIN_SET)
-//�����ʼ����ע��case����û��break�����Ի��������������
+//电机初始出，注意case里面没有break，所以会依次启动下面的
 
-//Drv8243 P23ҳ
-//�����ʼ������
+/**
+ * @brief  电机驱动初始化函数
+ * @param  nMotorCount 初始化的电机数量
+ * @note   基于 DRV8243HW 芯片的电机驱动初始化函数
+ *         可参考 Drv8243 P23页
+ */
 void MotorDriver_Init(uint8_t nMotorCount)
 {
-	// ����������Ƿ���Ч
-	if(nMotorCount<1||nMotorCount>4) return;
+	/* 检查电机数量是否有效 */
+	if ( nMotorCount < 1 || nMotorCount > 4 ) return;
 	
-	// forѭ�����λ��Ѻ�����ָ�����������
+	/* for循环依次唤醒和配置指定数量个电机 */
 	for (uint8_t motor = 1; motor <= nMotorCount; motor++)
 	{
 			GPIO_TypeDef* nSLEEP_Port;
@@ -33,7 +33,7 @@ void MotorDriver_Init(uint8_t nMotorCount)
 			uint16_t OFF_Pin;
 			uint32_t channel;
 			
-			// ���ݵ�����ѡ����Ӧ�����ź�pwm���ͨ��
+			/* 根据电机编号选择相应的引脚和pwm输出通道 */
 			switch (motor)
 			{
 					case 1:
@@ -66,25 +66,30 @@ void MotorDriver_Init(uint8_t nMotorCount)
 							break;
 			}
 			
-			// ���ѵ�����ȴ��������״̬
+			/* 唤醒电机并等待进入待机状态 */
 			HAL_GPIO_WritePin(nSLEEP_Port, nSLEEP_Pin, GPIO_PIN_SET);
-			HAL_Delay(1);																								//�ȴ�������Ӧ
+			HAL_Delay(1);																								/* 等待器件回应 */
 			
-			// ȷ�ϵ���ѻ���
+			/* 确认电机已唤醒 */
 			HAL_GPIO_WritePin(nSLEEP_Port, nSLEEP_Pin, GPIO_PIN_RESET);
-			delay_us(31);																								//�ȴ�������Ӧ
-			//while(HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port,M4_nFAULT_Pin)!=1){}//����while����delay��д�����ǵ��Ŀ�����
-			HAL_GPIO_WritePin(nSLEEP_Port, nSLEEP_Pin, GPIO_PIN_SET);		//nsleep����
+			delay_us(31);																								/* 等待器件回应 */
+			//while(HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port,M4_nFAULT_Pin)!=1){}//不用while而用delay的写法，是担心卡死。
+			HAL_GPIO_WritePin(nSLEEP_Port, nSLEEP_Pin, GPIO_PIN_SET);		                                            /* nsleep激活 */
 			
-			// ����PWM����͹ر�OFF����
+			/* 开启PWM输出和关闭OFF引脚 */
 			HAL_TIM_PWM_Start(&htim1, channel);
 			HAL_GPIO_WritePin(OFF_Port, OFF_Pin, GPIO_PIN_RESET);
 			
-			// ֹͣ���
-			MotorDriver_Stop(motor, 5000);
+			/* 设定电机处于停转状态，并设置占空比为50% */
+			MotorDriver_Stop(motor, PWM_DUTY_LIMIT/2);
 		}
 }
 
+/**
+ * @brief  电机启动函数
+ * @param  nMotor 电机编号
+ * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
+ */
 void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty)
 {
 	uint16_t nDutySet;
@@ -122,6 +127,13 @@ void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty)
 }
 
 
+/**
+ * @brief   设置电机驱动的占空比
+ * @param   nMotor 电机编号
+ * @param   nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
+ * @details 该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
+ *          占空比 0 ~ 100%  对应电压 0 ~ VCC。
+ */
 void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty)
 {
 	uint16_t nDutySet;
@@ -146,7 +158,7 @@ void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty)
 	}
 }
 
-
+/* 电机停止 */
 void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty)
 {
 	uint16_t nDutySet;
@@ -174,7 +186,16 @@ void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty)
 			;
 	}	
 }
-void MotorDriver_Off(uint8_t nMotor)
+
+
+
+/**
+ * @brief   关闭电机驱动
+ * @param   nMotor
+ * @details 该函数将关闭电机驱动的H桥输出，此时电机正负极均为高阻态，此使电机可以自由旋转。
+ *          该函数需要与Stop函数进行区分，Stop函数为电机停止，且电机处于制动状态，不能自由旋转。
+ */
+void MotorDriver_OFF(uint8_t nMotor)
 {
 	switch (nMotor)
 	{
@@ -196,7 +217,27 @@ void MotorDriver_Off(uint8_t nMotor)
 }
 
 
-//�����û����
+void MotorDriver_ON(uint8_t nMotor){
+		switch (nMotor)
+	{
+		case 1:
+			HAL_GPIO_WritePin(M1_OFF_GPIO_Port,M1_OFF_Pin,GPIO_PIN_RESET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(M2_OFF_GPIO_Port,M2_OFF_Pin,GPIO_PIN_RESET);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(M3_OFF_GPIO_Port,M3_OFF_Pin,GPIO_PIN_RESET);
+			break;
+		case 4:
+			HAL_GPIO_WritePin(M4_OFF_GPIO_Port,M4_OFF_Pin,GPIO_PIN_RESET);
+			break;
+		default:
+			;
+	}	
+}
+
+//这个还没改完
 uint8_t MotorDriver_GetMotorState(uint8_t nMotor)
 {
 	switch (nMotor)
@@ -214,6 +255,11 @@ uint8_t MotorDriver_GetMotorState(uint8_t nMotor)
 	}	
 }
 
+/**
+ * @brief   编码器初始化函数
+ * @param   nEncoderCount 初始化的编码器数量，通常与使能的电机数量相同。
+ * @details 基于 AB 相反馈 的编码器初始化
+ */
 void Encoder_Init(uint8_t nEncoderCount)
 {
 	if(nEncoderCount<1||nEncoderCount>4) return;

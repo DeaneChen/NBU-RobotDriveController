@@ -49,7 +49,7 @@
 
 /* USER CODE BEGIN PV */
 
-//===============编码器测试变量===============
+//===============编码器测试变�?===============
 volatile int32_t enc1,enc2,enc3,enc4;
 
 /* USER CODE END PV */
@@ -116,9 +116,9 @@ int main(void)
 	
 	Encoder_Init(4);
 	
-	//==================电机控制器测试==============
-	MotorController_Init(500*30,82,4);  //初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
-	MotorController_SetAcceleration(800);  //设置加速度值，单位：mm/秒*秒
+	//==================电机控制器测�?==============
+	MotorController_Init(500*30,82,4);  //初始化调速器，参�?1：轮子转�?圈输出的脉冲个数；参�?2：轮子直径，单位mm；参�?3：几个电机需要调�?
+	MotorController_SetAcceleration(800);  //设置加�?�度值，单位：mm/�?*�?
 	MotorController_Enable(ENABLE);
 	
 	
@@ -149,7 +149,7 @@ int main(void)
 			led_val=0;
 		HAL_Delay(50);
 		
-		//==============编码器测试程序================
+		//==============编码器测试程�?================
 		enc1=Encoder_GetEncCount(1);
 		enc2=Encoder_GetEncCount(2);
 		enc3=Encoder_GetEncCount(3);
