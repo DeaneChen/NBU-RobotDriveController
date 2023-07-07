@@ -98,9 +98,22 @@ uint8_t MotorDriver_GetMotorState(uint8_t nMotor); //获取电机nMotor的状态
  */
 void Encoder_Init(uint8_t nEncoderCount); 
 
+/**
+ * @brief  获取编码器的当前计数值
+ * @param  nEncoder 编码器编号，nEncoder=1返回编码器1，以此类推。
+ * @retval 编码器的当前计数值
+ */
+uint16_t Encoder_GetCNT(uint8_t nEncoder); 
 
-uint16_t Encoder_GetCNT(uint8_t nEncoder); //返回编码器的计数值，nEncoder=1返回编码器A，以此类推
-int32_t Encoder_GetEncCount(uint8_t nEncoder);//返回编码器累计计数值，32位有符号值，正为正转，负为反转。最大大概20亿，长时间运行注意溢出。
+/**
+ * @brief  获取编码器累计计数值
+ * @param  nEncoder 编码器编号，nEncoder=1返回编码器1，以此类推。
+ * @return 编码器的累计计数值 32位带符号整形
+ * @note   返回值为32位带符号整形，注意长时间运行的溢出。一般情况下，数小时没有问题。
+ *         通常可以间隔一定时间进行两次调用，将两次的返回值作差运算得到增量结果，最后通过增量结果计算电机速度。
+ *         
+ */
+int32_t Encoder_GetEncCount(uint8_t nEncoder);
 
 
 

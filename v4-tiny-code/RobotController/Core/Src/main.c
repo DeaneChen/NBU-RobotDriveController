@@ -49,7 +49,7 @@
 
 /* USER CODE BEGIN PV */
 
-//===============编码器测试变�?===============
+//===============???????===============
 volatile int32_t enc1,enc2,enc3,enc4;
 
 /* USER CODE END PV */
@@ -107,7 +107,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	//===================电机测试===============
+	//===================????===============
 	MotorDriver_Init(4);
 	MotorDriver_Start(4,PWM_DUTY_LIMIT/2);
 	MotorDriver_Start(3,PWM_DUTY_LIMIT/2);
@@ -116,9 +116,9 @@ int main(void)
 	
 	Encoder_Init(4);
 	
-	//==================电机控制器测�?==============
-	MotorController_Init(500*30,82,4);  //初始化调速器，参�?1：轮子转�?圈输出的脉冲个数；参�?2：轮子直径，单位mm；参�?3：几个电机需要调�?
-	MotorController_SetAcceleration(800);  //设置加�?�度值，单位：mm/�?*�?
+	//==================???????==============
+	MotorController_Init(500*30,82,4);  //?????????1????????????????2????????mm???3?????????
+	MotorController_SetAcceleration(800);   //??????????mm/?*?
 	MotorController_Enable(ENABLE);
 	
 	
@@ -127,10 +127,10 @@ int main(void)
 	MotorController_SetSpeed(2,400);
 	MotorController_SetSpeed(1,-400);
 	
-	//===================Usart3通信测试===============
+	//===================Usart3????===============
 	//HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
 	
-	//=================led测试=================
+	//=================led??=================
 	FnLED_SetRGB(FnLED2,33,0,0,1);
 	uint8_t led_val=0;
   HAL_Delay(1000);
@@ -140,7 +140,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //LED测试程序
+    //LED????
 		HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
 		
 		FnLED_SetRGB(FnLED3,0,led_val,0,1);
@@ -149,7 +149,7 @@ int main(void)
 			led_val=0;
 		HAL_Delay(50);
 		
-		//==============编码器测试程�?================
+		//==============???????================
 		enc1=Encoder_GetEncCount(1);
 		enc2=Encoder_GetEncCount(2);
 		enc3=Encoder_GetEncCount(3);
