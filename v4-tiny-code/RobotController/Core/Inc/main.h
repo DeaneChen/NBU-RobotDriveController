@@ -60,6 +60,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TIM_MOTOR_PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
 #define TIM_MOTOR_TIM_ENCOER_ARR MOTOR_TIM_ENCODER_ARR
+#define VBAT_SENSE_Pin GPIO_PIN_0
+#define VBAT_SENSE_GPIO_Port GPIOC
 #define M1_IPROPI_Pin GPIO_PIN_4
 #define M1_IPROPI_GPIO_Port GPIOC
 #define M3_IPROPI_Pin GPIO_PIN_5
@@ -116,6 +118,8 @@ void Error_Handler(void);
 #define M1_nFAULT_GPIO_Port GPIOD
 #define M1_nSLEEP_Pin GPIO_PIN_7
 #define M1_nSLEEP_GPIO_Port GPIOD
+#define BEEP_EN_Pin GPIO_PIN_1
+#define BEEP_EN_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
 

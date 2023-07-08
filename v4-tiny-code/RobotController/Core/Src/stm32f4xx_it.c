@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "motor_driver.h"
 #include "motor_controller.h"
+#include "backend_loop.h"
 #include "usart.h"
 /* USER CODE END Includes */
 
@@ -334,7 +335,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	else if(htim==(&htim6))
 	{
 		MotorController_SpeedTunner();
-	}
+	}else if(htim==(&htim7)){
+                Backend_Loop();
+  }
 }
 
 

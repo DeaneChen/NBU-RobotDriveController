@@ -23,9 +23,15 @@ void MotorDriver_Init(void) {
     /* 检查电机数量是否有效 */
     if (MOTOR_COUNT < 1 || MOTOR_COUNT > 4) return;
 
-#if (IS_ENABLE_MOTOR_CURRENT_DETECTION && !IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
-    /* 若关闭全通道采样 则 检查ADC通道配置是否与电机数量匹配 */
-    if (hadc1.Init.NbrOfConversion != MOTOR_COUNT) return; 
+#if (IS_ENABLE_MOTOR_CURRENT_DETECTION)
+    /* 检查ADC通道配置是否与电机数量匹配 */
+    #if (!IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
+        /* 若关闭全通道采样 则 检查ADC通道配置是否与电机数量匹配 */
+        if (hadc1.Init.NbrOfConversion != MOTOR_COUNT) return; 
+    #else
+        /* 若开启全通道采样 则 检查ADC通道配置是否有4个通道 */
+        if (hadc1.Init.NbrOfConversion != 4) return;
+    #endif
 #endif
 
     /* for循环依次唤醒和配置指定数量个电机 */
@@ -306,10 +312,13 @@ uint8_t MotorDriver_GetDriveWorkState(uint8_t nMotor) {
  *         传入的 motor_currents 需要确保 空间大于 4 从而避免溢出问题
  * @retval 1 获取成功
  * @retval 0 获取失败，一般为ADC超时，此时必须进行DEBUG排查。
+ * @details 当需要使用ADC1的其他通道时，或者出于其他目的需要统一管理ADC的使用，例如多重采样等等，需要重写此函数的ADC值读取部分。
+ *          推荐采用Update - read模式，使用一个Update函数或者DMA方式统一转换多个通道，使用多个read函数（例如本函数和其他需要ADC采样的函数）
+ *          读取Update调用后的更新值。如此周期循环。
  */
 uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
 
-#if (IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
+#if (IS_ENABLE_MOTOR_CURRENT_DETECTION)
     
     uint8_t motor_current_channel_num = 4;
     uint8_t error = 0;
@@ -318,8 +327,8 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
     motor_current_channel_num = MOTOR_COUNT;
 #endif
 
+    HAL_ADC_Start(&hadc1);
     for (uint8_t i = 1; i <= motor_current_channel_num; i++) {
-        HAL_ADC_Start(&hadc1);
         error |= HAL_ADC_PollForConversion(&hadc1,2); /* ADC采样等待 超时2ms */
         uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
         /* 整形运算版本 将 x3075 拆分两次以优化整形运算的舍入误差 */
@@ -328,6 +337,7 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
         adc_value = (uint32_t)(adc_value * ADC_REF_VOLTAGE * 3075.0f * 0.000244140625f * 0.001f);
         *(motor_currents + motor_current_channel_num - 1) = adc_value;
     }
+    HAL_ADC_Stop(&hadc1);
 
     return (!error);
 
