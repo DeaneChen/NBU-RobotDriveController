@@ -2,7 +2,7 @@
 #include "gpio.h"
 #include "motor_driver.h"
 #include "delay.h"
-
+#include "adc.h"
 
 __IO int16_t MotorDirver_Tim4_Update_Count = 0;
 __IO int16_t MotorDirver_Tim5_Update_Count = 0;
@@ -15,16 +15,21 @@ __IO int16_t MotorDirver_Tim2_Update_Count = 0;
 
 /**
  * @brief  电机驱动初始化函数
- * @param  nMotorCount 初始化的电机数量
- * @note   基于 DRV8243HW 芯片的电机驱动初始化函数
- *         可参考 Drv8243 P23页
+ * @note   该函数将根据 MOTOR_COUNT 确定初始化的电机数量
+ *         基于 DRV8243HW 芯片的电机驱动初始化函数，可参考 Drv8243 DataSheet P23页
  */
-void MotorDriver_Init(uint8_t nMotorCount) {
+void MotorDriver_Init(void) {
+
     /* 检查电机数量是否有效 */
-    if (nMotorCount < 1 || nMotorCount > 4) return;
+    if (MOTOR_COUNT < 1 || MOTOR_COUNT > 4) return;
+
+#if (IS_ENABLE_MOTOR_CURRENT_DETECTION && !IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
+    /* 若关闭全通道采样 则 检查ADC通道配置是否与电机数量匹配 */
+    if (hadc1.Init.NbrOfConversion != MOTOR_COUNT) return; 
+#endif
 
     /* for循环依次唤醒和配置指定数量个电机 */
-    for (uint8_t motor = 1; motor <= nMotorCount; motor++) {
+    for (uint8_t motor = 1; motor <= MOTOR_COUNT; motor++) {
         GPIO_TypeDef* nSLEEP_Port;
         uint16_t nSLEEP_Pin;
         GPIO_TypeDef* OFF_Port;
@@ -254,15 +259,59 @@ uint8_t MotorDriver_GetMotorState(uint8_t nMotor) {
     }
 }
 
+
+/**
+ * @brief  获取电机的负载电流
+ * @param  motor_currents 存储电机负载电流的数组
+ * @note   该函数为阻塞查询函数，消耗的时间一般可以忽略不计（理想情况下ADC查询开销10~几十us），但在最坏的情况下可能发生ADC超时（极少）。
+ *         传入的 motor_currents 需要确保 空间大于 4 从而避免溢出问题
+ * @retval 1 获取成功
+ * @retval 0 获取失败，一般为ADC超时，此时必须进行DEBUG排查。
+ */
+uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
+
+#if (IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
+    
+    uint8_t motor_current_channel_num = 4;
+    uint8_t error = 0;
+
+#if (!IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION)
+    motor_current_channel_num = MOTOR_COUNT;
+#endif
+
+    for (uint8_t i = 1; i <= motor_current_channel_num; i++)
+    {
+        HAL_ADC_Start(&hadc1);
+        error |= HAL_ADC_PollForConversion(&hadc1,2); /* ADC采样等待 超时2ms */
+        uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
+        /* 整形运算版本 将 x3075 拆分两次以优化整形运算的舍入误差 */
+        // adc_value = ((adc_value * ADC_REF_VOLTAGE * 123) >> 12) * 25 / 1000;
+        /* 浮点运算版本 带FPU的情况下，浮点运算可能速度相差无几 */
+        adc_value = (uint32_t)(adc_value * ADC_REF_VOLTAGE * 3075.0f * 0.000244140625f * 0.001f);
+        *(motor_currents + motor_current_channel_num - 1) = adc_value;
+    }
+
+    return (!error);
+
+#endif
+
+    return 0;
+}
+
+
+
 /**
  * @brief   编码器初始化函数
- * @param   nEncoderCount 初始化的编码器数量，通常与使能的电机数量相同。
+ * @note    该函数将根据 ENCODER_COUNT 宏定义确定初始化的编码器数量
  * @details 基于 AB 相反馈 的编码器初始化
  */
-void Encoder_Init(uint8_t nEncoderCount) {
-    if (nEncoderCount < 1 || nEncoderCount > 4)
+void Encoder_Init(void) {
+
+    /* 检查编码器数量是否有效 */
+    if (ENCODER_COUNT < 1 || ENCODER_COUNT > 4)
         return;
-    switch (nEncoderCount) {
+
+    switch (ENCODER_COUNT) {
         case 4:
             __HAL_TIM_CLEAR_IT(&htim5, TIM_IT_UPDATE);
             HAL_TIM_Base_Start_IT(&htim5);

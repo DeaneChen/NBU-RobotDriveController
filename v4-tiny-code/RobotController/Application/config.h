@@ -4,6 +4,7 @@
 /* 全局配置文件 --------------------------------------------------------- */
 /* 该文件整合了机器人控制器的大部分基本控制参数，从而便于系统的调整 */
 /* 默认情况下，该文件已被 main.h 包含 */
+/* 采用 # 标记的为不了解的情况下不推荐修改的参数 */
 
 
 /* 用户自定义部分 ------------------------------------------------------- */
@@ -18,8 +19,31 @@
 
 /* 核心驱动部分 --------------------------------------------------------- */
 
-#define MOTOR_PWM_DUTY_LIMIT 10000
-#define MOTOR_TIM_ENCODER_ARR 60000
+/* ADC 基准电压 单位mV */
+#define ADC_REF_VOLTAGE (3300)
+
+/* 电机与编码器相关 --------------------------- */
+
+/* 直流电机数量，最小为0，最大为4 */
+#define MOTOR_COUNT    (4)
+/* 编码器数量 */
+#define ENCODER_COUNT  (MOTOR_COUNT)
+
+/* # 启用直流电机电流检测 */
+#define IS_ENABLE_MOTOR_CURRENT_DETECTION  (1)
+/* # 直流电机电流全通道采样 */
+/* 当启用该配置时，不论电机数量为几，均进行全通道（4个电机）采样，若不启用该配置，需要自行修改ADC的通道配置，避免报错 */
+#define IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION  (1)
+/* # 电流检测的采样电阻阻值，用于整形计算公式 单位：欧姆 */
+#define MOTOR_CURRENT_DETECTION_R_SAMPLE     (1000)
+/* # 电流检测的采样电阻阻值的倒数，用于浮点计算公式 单位：欧姆^(-1) */
+#define MOTOR_CURRENT_DETECTION_R_SAMPLE_REC (0.001f)
+
+
+/* # 直连电机驱动的PWM占空比最大值 0~MOTOR_PWM_DUTY_LIMIT 对应 0~100% */
+#define MOTOR_PWM_DUTY_LIMIT  (10000)
+/* # 编码器范围 */
+#define MOTOR_TIM_ENCODER_ARR (60000)
 
 
 
@@ -27,3 +51,4 @@
 
 
 #endif
+

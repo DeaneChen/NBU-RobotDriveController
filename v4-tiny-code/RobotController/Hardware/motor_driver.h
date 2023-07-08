@@ -15,22 +15,22 @@
  * 电机3：IN1-PD14，IN2-PA10（TIM1-3），
  * 电机4：IN1-PE15，IN2-PA9（TIM1-2），
  */
-extern int16_t MotorDirver_Tim4_Update_Count;
-extern int16_t MotorDirver_Tim5_Update_Count;
-extern int16_t MotorDirver_Tim3_Update_Count;
-extern int16_t MotorDirver_Tim2_Update_Count;
+extern __IO int16_t MotorDirver_Tim4_Update_Count;
+extern __IO int16_t MotorDirver_Tim5_Update_Count;
+extern __IO int16_t MotorDirver_Tim3_Update_Count;
+extern __IO int16_t MotorDirver_Tim2_Update_Count;
 
 /* PWM占空比最大值，0~PWM_DUTY_LIMIT 对应 0~100% */
-#define PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT  
+#define PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
 
 /**
  * @brief  电机驱动初始化函数
- * @param  nMotorCount 初始化的电机数量
- * @note   基于 DRV8243HW 芯片的电机驱动初始化函数
+ * @note   该函数将根据 MOTOR_COUNT 确定初始化的电机数量
+ *         该函数为基于 DRV8243HW 芯片的电机驱动初始化函数
  * @details  nMotorCount=1，初始化电机1，nMotor=2，初始化电机1和2，以此类推，从1到4
  *           初始化后，默认电机是停止的，需要用MotorDriver_Start启动电机
  */
-void MotorDriver_Init(uint8_t nMotorCount); 
+void MotorDriver_Init(void);
 
 /**
  * @brief  设置电机驱动的PWM占空比
@@ -39,23 +39,22 @@ void MotorDriver_Init(uint8_t nMotorCount);
  * @details  该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
  *           占空比 0 ~ 100%  对应电压 0 ~ VCC。
  */
-void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty); 
+void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  电机启动函数
  * @param  nMotor 电机编号
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0 
+ * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  */
 void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty);
-
 
 /**
  * @brief  电机停止函数
  * @param  nMotor 电机编号
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0 
+ * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  * @details  每次停止后，需要用MotorDriver_Start重新启动电机
  */
-void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);  
+void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  关闭电机驱动
@@ -64,7 +63,7 @@ void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);
  *         只有关闭电机驱动时，才可以进行电机侧的 开路/短路 诊断
  * @details  每次关闭后，需要用MotorDriver_ON重新启用驱动
  *           该函数需要与Stop函数进行区分，Stop函数为电机停止，且电机处于制动状态，不能自由旋转。
- */																											 
+ */
 void MotorDriver_OFF(uint8_t nMotor);
 
 /**
@@ -74,9 +73,18 @@ void MotorDriver_OFF(uint8_t nMotor);
  */
 void MotorDriver_ON(uint8_t nMotor);
 
+uint8_t MotorDriver_GetMotorState(uint8_t nMotor);  // 获取电机nMotor的状态，0-运行状态，1-停止状态
 
-uint8_t MotorDriver_GetMotorState(uint8_t nMotor); //获取电机nMotor的状态，0-运行状态，1-停止状态
-																											 
+/**
+ * @brief  获取电机的负载电流
+ * @param  motor_currents 存储电机负载电流的数组
+ * @note   该函数为阻塞查询函数，消耗的时间一般可以忽略不计（理想情况下ADC查询开销10~几十us），但在最坏的情况下可能发生ADC超时（极少）。
+ *         传入的 motor_currents 需要确保 空间大于 4 从而避免溢出问题
+ * @retval 1 获取成功
+ * @retval 0 获取失败，一般为ADC超时，此时必须进行DEBUG排查。
+ */
+uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
+
 /**
  * 编码器部分
  * 使用了TIM2，TIM4，TIM3，TIM5
@@ -92,11 +100,11 @@ uint8_t MotorDriver_GetMotorState(uint8_t nMotor); //获取电机nMotor的状态
 
 /**
  * @brief  编码器初始化函数
- * @param  nEncoderCount 初始化的编码器数量，通常与使能的电机数量相同。
+ * @note   该函数将根据 ENCODER_COUNT 宏定义确定初始化的编码器数量
  * @details  基于 AB 相反馈 的编码器初始化
  *           nEncoderCount=1，初始化编码器1，=2，初始化编码器1和2，以此类推，从1到4
  */
-void Encoder_Init(uint8_t nEncoderCount); 
+void Encoder_Init(void); 
 
 /**
  * @brief  获取编码器的当前计数值

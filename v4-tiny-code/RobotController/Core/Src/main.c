@@ -49,7 +49,7 @@
 
 /* USER CODE BEGIN PV */
 
-//===============ç¼–ç å™¨æµ‹è¯•å˜é‡===============
+//===============±àÂëÆ÷²âÊÔ±äÁ¿===============
 volatile int32_t enc1,enc2,enc3,enc4;
 
 /* USER CODE END PV */
@@ -101,38 +101,39 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM6_Init();
   MX_USART3_UART_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	//===================ç”µæœºæµ‹è¯•===============
-	MotorDriver_Init(4);
-	MotorDriver_Start(4,PWM_DUTY_LIMIT/2);
-	MotorDriver_Start(3,PWM_DUTY_LIMIT/2);
-	MotorDriver_Start(2,PWM_DUTY_LIMIT/2);
-	MotorDriver_Start(1,PWM_DUTY_LIMIT/2);
-	
-	Encoder_Init(4);
-	
-	//==================ç”µæœºæ§åˆ¶å™¨æµ‹è¯•==============
-	MotorController_Init(500*30,82,4);  //åˆå§‹åŒ–è°ƒé€Ÿå™¨ï¼Œå‚æ•°1ï¼šè½®å­è½¬ä¸€åœˆè¾“å‡ºçš„è„‰å†²ä¸ªæ•°ï¼›å‚æ•°2ï¼šè½®å­ç›´å¾„ï¼Œå•ä½mmï¼›å‚æ•°3ï¼šå‡ ä¸ªç”µæœºéœ€è¦è°ƒé€Ÿ
-	MotorController_SetAcceleration(800);   //è®¾ç½®åŠ é€Ÿåº¦å€¼ï¼Œå•ä½ï¼šmm/ç§’*ç§’
-	MotorController_Enable(ENABLE);
-	
-	
-	MotorController_SetSpeed(4,300);
-	MotorController_SetSpeed(3,-300);
-	MotorController_SetSpeed(2,400);
-	MotorController_SetSpeed(1,-400);
-	
-	//===================Usart3é€šä¿¡æµ‹è¯•===============
-	//HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
-	
-	//=================ledæµ‹è¯•=================
-	FnLED_SetRGB(FnLED2,33,0,0,1);
-	uint8_t led_val=0;
+
+  //===================µç»ú²âÊÔ===============
+  MotorDriver_Init();
+  MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(2, PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(1, PWM_DUTY_LIMIT / 2);
+
+  Encoder_Init();
+
+  //==================µç»ú¿ØÖÆÆ÷²âÊÔ==============
+  MotorController_Init(500 * 30, 82, 4);  // ³õÊ¼»¯µ÷ËÙÆ÷£¬²ÎÊı1£ºÂÖ×Ó×ªÒ»È¦Êä³öµÄÂö³å¸öÊı£»²ÎÊı2£ºÂÖ×ÓÖ±¾¶£¬µ¥Î»mm£»²ÎÊı3£º¼¸¸öµç»úĞèÒªµ÷ËÙ
+  MotorController_SetAcceleration(800);   // ÉèÖÃ¼ÓËÙ¶ÈÖµ£¬µ¥Î»£ºmm/Ãë*Ãë
+  MotorController_Enable(ENABLE);
+
+  MotorController_SetSpeed(4, 300);
+  MotorController_SetSpeed(3, -300);
+  MotorController_SetSpeed(2, 400);
+  MotorController_SetSpeed(1, -400);
+
+  //===================Usart3Í¨ĞÅ²âÊÔ===============
+  // HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
+
+  //=================led²âÊÔ=================
+  FnLED_SetRGB(FnLED2, 33, 0, 0, 1);
+  uint8_t led_val = 0;
   HAL_Delay(1000);
   FnLED_OFF(FnLED2);
   while (1)
@@ -140,7 +141,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //LEDæµ‹è¯•ç¨‹åº
+    //LED²âÊÔ³ÌĞò
 		HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
 		
 		FnLED_SetRGB(FnLED3,0,led_val,0,1);
@@ -149,7 +150,7 @@ int main(void)
 			led_val=0;
 		HAL_Delay(50);
 		
-		//==============ç¼–ç å™¨æµ‹è¯•ç¨‹åº================
+		//==============±àÂëÆ÷²âÊÔ³ÌĞò================
 		enc1=Encoder_GetEncCount(1);
 		enc2=Encoder_GetEncCount(2);
 		enc3=Encoder_GetEncCount(3);
