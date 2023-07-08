@@ -74,6 +74,24 @@ extern void MotorDriver_OFF(uint8_t nMotor);
 extern void MotorDriver_ON(uint8_t nMotor);
 
 /**
+ * @brief  获取电机运行状态
+ * @param  nMotor 电机编号，可选值1-4
+ * @note   该函数可以用于确认电机是处于Start还是Stop
+ * @retval 1 电机已经Start
+ * @retval 0 电机已经Stop
+ */
+extern uint8_t MotorDriver_GetMotorRunState(uint8_t nMotor);
+
+/**
+ * @brief  获取驱动工作状态
+ * @param  nMotor 电机编号，可选值1-4
+ * @note   该函数可以用于确认驱动是处于ON还是OFF
+ * @retval 1 驱动已经ON
+ * @retval 0 驱动已经OFF
+ */
+extern uint8_t MotorDriver_GetDriveWorkState(uint8_t nMotor);
+
+/**
  * @brief  获取电机的负载电流
  * @param[out]  motor_currents 存储电机负载电流的数组
  * @note   该函数为阻塞查询函数，消耗的时间一般可以忽略不计（理想情况下ADC查询开销10~几十us），但在最坏的情况下可能发生ADC超时（极少）。

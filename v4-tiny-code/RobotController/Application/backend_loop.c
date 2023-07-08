@@ -7,6 +7,7 @@
 
 #include "backend_loop.h"
 #include "vcc_sense.h"
+#include "beep.h"
 
 /**
  * @brief 多周期控制扩展函数 展开宏

@@ -371,7 +371,7 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
     uint8_t error = 0;
 
     switch (nMotor) {
-        case 1:
+        case 1: {
             /* 状态暂存 */
             GPIO_PinState state = HAL_GPIO_ReadPin(M1_IN1_GPIO_Port, M1_IN1_Pin);
             /* 诊断信息收集 */
@@ -385,7 +385,8 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR4 = PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin) << 2;
             break;
-        case 2:
+        }
+        case 2: {
             /* 状态暂存 */
             GPIO_PinState state = HAL_GPIO_ReadPin(M2_IN1_GPIO_Port, M2_IN1_Pin);
             /* 诊断信息收集 */
@@ -399,7 +400,8 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR1 = PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin) << 2;
             break;
-        case 3:
+        }
+        case 3: {
             /* 状态暂存 */
             GPIO_PinState state = HAL_GPIO_ReadPin(M3_IN1_GPIO_Port, M3_IN1_Pin);
             /* 诊断信息收集 */
@@ -413,7 +415,8 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR3 = PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin) << 2;
             break;
-        case 4:
+        }
+        case 4: {
             /* 状态暂存 */
             GPIO_PinState state = HAL_GPIO_ReadPin(M4_IN1_GPIO_Port, M4_IN1_Pin);
             /* 诊断信息收集 */
@@ -427,6 +430,7 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR2 = PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 2;
             break;
+        }
         default:
             return 0;
     }
@@ -434,19 +438,19 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
     /* 故障诊断 */
     switch (error) {
         /* 负载正常 */
-        case 0b110:
+        case 6 :
             return 0;
         /* 负载开路 */
-        case 0b101:
+        case 5 :
             return 1;
         /* 负载GND短路 */
-        case 0b000:
+        case 0 :
             return 2;
         /* 负载VCC短路 */
-        case 0b111:
+        case 7 :
             return 3;
         /* 其他未知异常 */
-        default:
+        default :
             return 4;
     }
 }
