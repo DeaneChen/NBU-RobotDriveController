@@ -89,7 +89,7 @@ void MotorDriver_Init(void) {
 
 /**
  * @brief  电机启动函数
- * @param  nMotor 电机编号
+ * @param  nMotor 电机编号，可选值1-4
  * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
  */
 void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty) {
@@ -133,7 +133,7 @@ void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty) {
 
 /**
  * @brief   设置电机驱动的占空比
- * @param   nMotor 电机编号
+ * @param   nMotor 电机编号，可选值1-4
  * @param   nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details 该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
  *          占空比 0 ~ 100%  对应电压 0 ~ VCC。
@@ -146,6 +146,12 @@ void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty) {
         nDutySet = PWM_DUTY_LIMIT;
     } else {
         nDutySet = nDuty;
+    }
+
+    /* 驱动工作检验 */
+    if(!MotorDriver_GetDriveWorkState(nMotor)){
+        /* 驱动未工作，不允许设置占空比 */
+        return;
     }
 
     switch (nMotor) {
@@ -199,7 +205,7 @@ void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty) {
 
 /**
  * @brief   关闭电机驱动
- * @param   nMotor
+ * @param   nMotor 电机编号，可选值1-4
  * @details 该函数将关闭电机驱动的H桥输出，此时电机正负极均为高阻态，此使电机可以自由旋转。
  *          该函数需要与Stop函数进行区分，Stop函数为电机停止，且电机处于制动状态，不能自由旋转。
  */
@@ -243,26 +249,59 @@ void MotorDriver_ON(uint8_t nMotor) {
     }
 }
 
-// 这个还没改完
-uint8_t MotorDriver_GetMotorState(uint8_t nMotor) {
+
+/**
+ * @brief  获取电机运行状态
+ * @param  nMotor 电机编号，可选值1-4
+ * @note   该函数可以用于确认电机是处于Start还是Stop
+ * @retval 1 电机已经Start
+ * @retval 0 电机已经Stop
+ */
+uint8_t MotorDriver_GetMotorRunState(uint8_t nMotor) {
+
+    /* STM32F4xx Refernce Manual 提到 输出配置下  */
+    /* 对输入数据寄存器的读访问可得到 I/O 状态    */
+    /* 对输出数据寄存器的读访问得到最后一次写的值 */
     switch (nMotor) {
         case 1:
-            return HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_14);
+            return (HAL_GPIO_ReadPin(M1_IN1_GPIO_Port, M1_IN1_Pin) == GPIO_PIN_SET);
         case 2:
-            return HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_10);
+            return (HAL_GPIO_ReadPin(M2_IN1_GPIO_Port, M2_IN1_Pin) == GPIO_PIN_SET);
         case 3:
-            return HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
+            return (HAL_GPIO_ReadPin(M3_IN1_GPIO_Port, M3_IN1_Pin) == GPIO_PIN_SET);
         case 4:
-            return HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_8);
+            return (HAL_GPIO_ReadPin(M4_IN1_GPIO_Port, M4_IN1_Pin) == GPIO_PIN_SET);
         default:
-            return 1;
+            return 0;
+    }
+}
+
+/**
+ * @brief  获取驱动工作状态
+ * @param  nMotor 电机编号，可选值1-4
+ * @note   该函数可以用于确认驱动是处于ON还是OFF
+ * @retval 1 驱动已经ON
+ * @retval 0 驱动已经OFF
+ */
+uint8_t MotorDriver_GetDriveWorkState(uint8_t nMotor) {
+    switch (nMotor) {
+        case 1:
+            return (HAL_GPIO_ReadPin(M1_OFF_GPIO_Port, M1_OFF_Pin) == GPIO_PIN_RESET);
+        case 2:
+            return (HAL_GPIO_ReadPin(M2_OFF_GPIO_Port, M2_OFF_Pin) == GPIO_PIN_RESET);
+        case 3:
+            return (HAL_GPIO_ReadPin(M3_OFF_GPIO_Port, M3_OFF_Pin) == GPIO_PIN_RESET);
+        case 4:
+            return (HAL_GPIO_ReadPin(M4_OFF_GPIO_Port, M4_OFF_Pin) == GPIO_PIN_RESET);
+        default:
+            return 0;
     }
 }
 
 
 /**
  * @brief  获取电机的负载电流
- * @param  motor_currents 存储电机负载电流的数组
+ * @param[out]  motor_currents 存储电机负载电流的数组
  * @note   该函数为阻塞查询函数，消耗的时间一般可以忽略不计（理想情况下ADC查询开销10~几十us），但在最坏的情况下可能发生ADC超时（极少）。
  *         传入的 motor_currents 需要确保 空间大于 4 从而避免溢出问题
  * @retval 1 获取成功
@@ -279,8 +318,7 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
     motor_current_channel_num = MOTOR_COUNT;
 #endif
 
-    for (uint8_t i = 1; i <= motor_current_channel_num; i++)
-    {
+    for (uint8_t i = 1; i <= motor_current_channel_num; i++) {
         HAL_ADC_Start(&hadc1);
         error |= HAL_ADC_PollForConversion(&hadc1,2); /* ADC采样等待 超时2ms */
         uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
@@ -293,11 +331,115 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
 
     return (!error);
 
-#endif
+#else
 
     return 0;
+
+#endif
+    
 }
 
+
+/**
+ * @brief  获取驱动的全桥负载故障状态
+ * @param  nMotor 电机编号
+ * @retval 0 负载正常
+ * @retval 1 负载开路
+ * @retval 2 负载GND短路
+ * @retval 3 负载VCC短路
+ * @retval 4 其他未知异常
+ * @retval 8 驱动未关闭，不允许诊断
+ */
+uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
+    
+    /* 判断驱动是否关闭 */
+    if(!MotorDriver_GetDriveWorkState(nMotor)){
+        /* 驱动未关闭，不允许故障诊断 */
+        return 8U;
+    }
+
+    uint8_t error = 0;
+
+    switch (nMotor) {
+        case 1:
+            /* 状态暂存 */
+            GPIO_PinState state = HAL_GPIO_ReadPin(M1_IN1_GPIO_Port, M1_IN1_Pin);
+            /* 诊断信息收集 */
+            HAL_GPIO_WritePin(M1_IN1_GPIO_Port, M1_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR4 = 0;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin);
+            HAL_GPIO_WritePin(M1_IN1_GPIO_Port, M1_IN1_Pin, GPIO_PIN_RESET);
+            TIM1->CCR4 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin) << 1;
+            HAL_GPIO_WritePin(M1_IN1_GPIO_Port, M1_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR4 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin) << 2;
+            break;
+        case 2:
+            /* 状态暂存 */
+            GPIO_PinState state = HAL_GPIO_ReadPin(M2_IN1_GPIO_Port, M2_IN1_Pin);
+            /* 诊断信息收集 */
+            HAL_GPIO_WritePin(M2_IN1_GPIO_Port, M2_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR1 = 0;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin);
+            HAL_GPIO_WritePin(M2_IN1_GPIO_Port, M2_IN1_Pin, GPIO_PIN_RESET);
+            TIM1->CCR1 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin) << 1;
+            HAL_GPIO_WritePin(M2_IN1_GPIO_Port, M2_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR1 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin) << 2;
+            break;
+        case 3:
+            /* 状态暂存 */
+            GPIO_PinState state = HAL_GPIO_ReadPin(M3_IN1_GPIO_Port, M3_IN1_Pin);
+            /* 诊断信息收集 */
+            HAL_GPIO_WritePin(M3_IN1_GPIO_Port, M3_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR3 = 0;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin);
+            HAL_GPIO_WritePin(M3_IN1_GPIO_Port, M3_IN1_Pin, GPIO_PIN_RESET);
+            TIM1->CCR3 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin) << 1;
+            HAL_GPIO_WritePin(M3_IN1_GPIO_Port, M3_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR3 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin) << 2;
+            break;
+        case 4:
+            /* 状态暂存 */
+            GPIO_PinState state = HAL_GPIO_ReadPin(M4_IN1_GPIO_Port, M4_IN1_Pin);
+            /* 诊断信息收集 */
+            HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR2 = 0;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin);
+            HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_RESET);
+            TIM1->CCR2 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 1;
+            HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_SET);
+            TIM1->CCR2 = PWM_DUTY_LIMIT;
+            error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 2;
+            break;
+        default:
+            return 0;
+    }
+
+    /* 故障诊断 */
+    switch (error) {
+        /* 负载正常 */
+        case 0b110:
+            return 0;
+        /* 负载开路 */
+        case 0b101:
+            return 1;
+        /* 负载GND短路 */
+        case 0b000:
+            return 2;
+        /* 负载VCC短路 */
+        case 0b111:
+            return 3;
+        /* 其他未知异常 */
+        default:
+            return 4;
+    }
+}
 
 
 /**

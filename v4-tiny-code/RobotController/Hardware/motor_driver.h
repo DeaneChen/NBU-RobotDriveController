@@ -30,60 +30,71 @@ extern __IO int16_t MotorDirver_Tim2_Update_Count;
  * @details  nMotorCount=1，初始化电机1，nMotor=2，初始化电机1和2，以此类推，从1到4
  *           初始化后，默认电机是停止的，需要用MotorDriver_Start启动电机
  */
-void MotorDriver_Init(void);
+extern void MotorDriver_Init(void);
 
 /**
  * @brief  设置电机驱动的PWM占空比
- * @param  nMotor 电机编号
+ * @param  nMotor 电机编号，可选值1-4
  * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details  该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
  *           占空比 0 ~ 100%  对应电压 0 ~ VCC。
  */
-void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty);
+extern void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  电机启动函数
- * @param  nMotor 电机编号
+ * @param  nMotor 电机编号，可选值1-4
  * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  */
-void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty);
+extern void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  电机停止函数
- * @param  nMotor 电机编号
+ * @param  nMotor 电机编号，可选值1-4
  * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  * @details  每次停止后，需要用MotorDriver_Start重新启动电机
  */
-void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);
+extern void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  关闭电机驱动
- * @param  nMotor
+ * @param  nMotor 电机编号，可选值1-4
  * @note   该函数将关闭电机驱动的H桥输出，此时电机正负极均为高阻态，此使电机可以自由旋转。
  *         只有关闭电机驱动时，才可以进行电机侧的 开路/短路 诊断
  * @details  每次关闭后，需要用MotorDriver_ON重新启用驱动
  *           该函数需要与Stop函数进行区分，Stop函数为电机停止，且电机处于制动状态，不能自由旋转。
  */
-void MotorDriver_OFF(uint8_t nMotor);
+extern void MotorDriver_OFF(uint8_t nMotor);
 
 /**
  * @brief   启用电机驱动
- * @param   nMotor
+ * @param   nMotor 电机编号，可选值1-4
  * @details 该函数将启用电机驱动的H桥输出
  */
-void MotorDriver_ON(uint8_t nMotor);
-
-uint8_t MotorDriver_GetMotorState(uint8_t nMotor);  // 获取电机nMotor的状态，0-运行状态，1-停止状态
+extern void MotorDriver_ON(uint8_t nMotor);
 
 /**
  * @brief  获取电机的负载电流
- * @param  motor_currents 存储电机负载电流的数组
+ * @param[out]  motor_currents 存储电机负载电流的数组
  * @note   该函数为阻塞查询函数，消耗的时间一般可以忽略不计（理想情况下ADC查询开销10~几十us），但在最坏的情况下可能发生ADC超时（极少）。
  *         传入的 motor_currents 需要确保 空间大于 4 从而避免溢出问题
  * @retval 1 获取成功
  * @retval 0 获取失败，一般为ADC超时，此时必须进行DEBUG排查。
  */
-uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
+extern uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
+
+/**
+ * @brief  获取驱动的全桥负载故障状态
+ * @param  nMotor 电机编号，可选值1-4
+ * @note   该函数必须在驱动关闭的状态下调用，该函数可以用于判断负载故障情况，例如负载短路，负载开路，负载短路到VCC，短路到GND等
+ * @retval 0 负载正常
+ * @retval 1 负载开路
+ * @retval 2 负载GND短路
+ * @retval 3 负载VCC短路
+ * @retval 4 其他未知异常
+ * @retval 8 驱动未关闭，不允许诊断
+ */
+uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor);
 
 /**
  * 编码器部分
@@ -104,14 +115,14 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
  * @details  基于 AB 相反馈 的编码器初始化
  *           nEncoderCount=1，初始化编码器1，=2，初始化编码器1和2，以此类推，从1到4
  */
-void Encoder_Init(void); 
+extern void Encoder_Init(void); 
 
 /**
  * @brief  获取编码器的当前计数值
  * @param  nEncoder 编码器编号，nEncoder=1返回编码器1，以此类推。
  * @retval 编码器的当前计数值
  */
-uint16_t Encoder_GetCNT(uint8_t nEncoder); 
+extern uint16_t Encoder_GetCNT(uint8_t nEncoder); 
 
 /**
  * @brief  获取编码器累计计数值
@@ -121,7 +132,7 @@ uint16_t Encoder_GetCNT(uint8_t nEncoder);
  *         通常可以间隔一定时间进行两次调用，将两次的返回值作差运算得到增量结果，最后通过增量结果计算电机速度。
  *         
  */
-int32_t Encoder_GetEncCount(uint8_t nEncoder);
+extern int32_t Encoder_GetEncCount(uint8_t nEncoder);
 
 
 
