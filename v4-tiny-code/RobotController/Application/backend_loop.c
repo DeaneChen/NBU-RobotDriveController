@@ -57,7 +57,9 @@ void Backend_Loop(void){
     /* 低电压报警 */
     if( vbat <= LOW_VBAT_ALARM_THRESHOLD ){
         BEEP_ON();
-    }
+    }else if(IS_BEEP_ON()){
+			 BEEP_OFF();
+		}
 
     /* 每100ms执行一次 */
     if(CYCLE_OK(100)){

@@ -327,15 +327,16 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
     motor_current_channel_num = MOTOR_COUNT;
 #endif
 
-    HAL_ADC_Start(&hadc1);
+    
     for (uint8_t i = 1; i <= motor_current_channel_num; i++) {
+		HAL_ADC_Start(&hadc1);
         error |= HAL_ADC_PollForConversion(&hadc1,2); /* ADC采样等待 超时2ms */
         uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
         /* 整形运算版本 将 x3075 拆分两次以优化整形运算的舍入误差 */
         // adc_value = ((adc_value * ADC_REF_VOLTAGE * 123) >> 12) * 25 / 1000;
         /* 浮点运算版本 带FPU的情况下，浮点运算可能速度相差无几 */
         adc_value = (uint32_t)(adc_value * ADC_REF_VOLTAGE * 3075.0f * 0.000244140625f * 0.001f);
-        *(motor_currents + motor_current_channel_num - 1) = adc_value;
+        *(motor_currents + i - 1) = adc_value;
     }
     HAL_ADC_Stop(&hadc1);
 

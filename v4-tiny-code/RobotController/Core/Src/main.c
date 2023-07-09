@@ -51,7 +51,11 @@
 
 //===============编码器测试变量===============
 volatile int32_t enc1,enc2,enc3,enc4;
+	
+//====================电机故障、电流测试==============
 
+uint32_t motor_currents[4];
+	
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,16 +122,17 @@ int main(void)
   MotorDriver_Start(1, PWM_DUTY_LIMIT / 2);
 
   Encoder_Init();
-
   //==================电机控制器测试==============
   MotorController_Init(500 * 30, 82, 4);  // 初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
   MotorController_SetAcceleration(800);   // 设置加速度值，单位：mm/秒*秒
   MotorController_Enable(ENABLE);
 
-  MotorController_SetSpeed(4, 300);
+  MotorController_SetSpeed(4, 500);
   MotorController_SetSpeed(3, -300);
   MotorController_SetSpeed(2, 400);
   MotorController_SetSpeed(1, -400);
+
+
 
   //===================Usart3通信测试===============
   // HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
@@ -160,7 +165,13 @@ int main(void)
 		//=================usart======================
 		uint8_t data[]="hello world\r\n";
 		//HAL_UART_Transmit(&huart3,data,sizeof(data),10);
-
+		
+		//====================电机故障、电流测试==============	
+			MotorDriver_GetCurrent(motor_currents);
+			MotorDriver_GetLoadErrorState(1);
+//			MotorDriver_GetLoadErrorState(2);
+//			MotorDriver_GetLoadErrorState(3);
+//			MotorDriver_GetLoadErrorState(4);
   }
   /* USER CODE END 3 */
 }

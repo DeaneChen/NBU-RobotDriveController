@@ -352,7 +352,9 @@ void MX_TIM7_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM7_Init 2 */
-
+	
+   __HAL_TIM_CLEAR_IT(&htim7, TIM_IT_UPDATE);  // 清除定时器中断标志
+   HAL_TIM_Base_Start_IT(&htim7);  // 启动定时器并使能中断
   /* USER CODE END TIM7_Init 2 */
 
 }

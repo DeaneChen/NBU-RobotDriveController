@@ -10,7 +10,7 @@
  */
 #if (IS_ENABLE_VBAT_MEAN_WINDOW_FILTER)
 static uint16_t voltage_group[8] = {0};
-static uint16_t voltage_acc = 0;
+static uint32_t voltage_acc = 0;
 static uint16_t voltage_count = 0;
 static uint16_t voltage_index = 0;
 #endif
@@ -23,7 +23,7 @@ uint16_t Get_BattryVoltage(void) {
     uint32_t adc_value = HAL_ADC_GetValue(&hadc3);
 
     /* 将 /4096 拆分为两次运算，避免整形溢出 */
-    adc_value = (((adc_value * ADC_REF_VOLTAGE) << 4) * BAT_VOLTAGE_R_SAMPLE_RATIO) << 8;
+    adc_value = (((adc_value * ADC_REF_VOLTAGE) >> 4) * BAT_VOLTAGE_R_SAMPLE_RATIO) >> 8;
 
 /* 启用均值窗口滤波 */
 #if (IS_ENABLE_VBAT_MEAN_WINDOW_FILTER)
