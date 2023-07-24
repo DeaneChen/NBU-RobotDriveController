@@ -148,7 +148,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     //LED≤‚ ‘≥Ã–Ú
-		HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
+		
 		
 		FnLED_SetRGB(FnLED3,0,led_val,0,1);
 		led_val+=1;

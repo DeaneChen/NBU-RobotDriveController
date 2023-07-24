@@ -354,6 +354,7 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
 /**
  * @brief  获取驱动的全桥负载故障状态
  * @param  nMotor 电机编号
+ * @note   必须调用 MotorDriver_OFF 函数将驱动输出关闭后，才可以进行负载诊断
  * @retval 0 负载正常
  * @retval 1 负载开路
  * @retval 2 负载GND短路
