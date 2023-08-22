@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "i2c.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -29,6 +30,7 @@
 #include "motor_driver.h"
 #include "motor_controller.h"
 #include "led.h"
+#include "mpu6500dmp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +53,6 @@
 
 //===============编码器测试变量===============
 volatile int32_t enc1,enc2,enc3,enc4;
-	
 //====================电机故障、电流测试==============
 
 uint32_t motor_currents[4];
@@ -107,8 +108,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM7_Init();
   MX_ADC3_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+  MPU6500_DMP_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -140,7 +143,7 @@ int main(void)
   //=================led测试=================
   FnLED_SetRGB(FnLED2, 33, 0, 0, 1);
   uint8_t led_val = 0;
-  HAL_Delay(1000);
+  HAL_Delay(500);
   FnLED_OFF(FnLED2);
   while (1)
   {
@@ -149,6 +152,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
     //LED测试程序
 		
+
+
 		
 		FnLED_SetRGB(FnLED3,0,led_val,0,1);
 		led_val+=1;
@@ -164,7 +169,7 @@ int main(void)
 		
 		//=================usart======================
 		uint8_t data[]="hello world\r\n";
-		//HAL_UART_Transmit(&huart3,data,sizeof(data),10);
+		HAL_UART_Transmit(&huart3,data,sizeof(data),10);
 		
 		//====================电机故障、电流测试==============	
 			MotorDriver_GetCurrent(motor_currents);
@@ -172,6 +177,13 @@ int main(void)
 //			MotorDriver_GetLoadErrorState(2);
 //			MotorDriver_GetLoadErrorState(3);
 //			MotorDriver_GetLoadErrorState(4);
+
+    /* 第 10s 校准MPU6500 为零 */
+    
+    
+    /* read */
+    Get_MPU6500_DMP_Data();
+
   }
   /* USER CODE END 3 */
 }
