@@ -55,9 +55,11 @@ uint16_t MPU6500_DMP_Init(void);
 
 extern double mpu_pitch,mpu_roll,mpu_yaw;
 /**
- * @brief 获取MPU6500数据，存储在全局变量 mpu_roll，mpu_pitch，mpu_yaw 中
- * @note  该函数为阻塞查询函数，消耗的时间约为4ms，但在最坏的情况下可能发生I2C通讯超时（MPU异常）
- *        经过测量，在 STM32F407 168MHz 工作环境下 1000次 运行耗时 4053ms，平均每次4ms
+ * @brief 获取MPU6500数据，存储在全局变量 mpu_roll，mpu_pitch，mpu_yaw 中，
+ * @note  该函数为阻塞查询函数，消耗的时间约为2ms，（在 STM32F407 168MHz 工作环境下 运行耗时约为2106us）
+ *        但在最坏的情况下可能发生数据缓冲复位或I2C通讯超时（MPU异常）等问题。
+ *        [Warning] MPU6500的传感器数据产生速率约为100Hz，倘若获取MPU6500的DMP数据速度慢于100Hz，长时间积累下会导致MPU6500内部的数据缓冲区溢出，
+ *        从而触发MPU6500的数据缓冲区复位，这一过程耗时的测量值约为60ms，倘若为了避免这一过程，最好确保该函数的调用速度略微大于100Hz。   
  */
 extern uint8_t Get_MPU6500_DMP_Data(void);
                    

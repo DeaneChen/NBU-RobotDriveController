@@ -53,6 +53,7 @@
 
 //===============编码器测试变量===============
 volatile int32_t enc1,enc2,enc3,enc4;
+volatile int32_t test_index;
 //====================电机故障、电流测试==============
 
 uint32_t motor_currents[4];
@@ -159,7 +160,7 @@ int main(void)
 		led_val+=1;
 		if (led_val>66) 
 			led_val=0;
-		HAL_Delay(50);
+		HAL_Delay(7);
 		
 		//==============编码器测试程序================
 		enc1=Encoder_GetEncCount(1);
@@ -169,7 +170,7 @@ int main(void)
 		
 		//=================usart======================
 		uint8_t data[]="hello world\r\n";
-		HAL_UART_Transmit(&huart3,data,sizeof(data),10);
+		//HAL_UART_Transmit(&huart3,data,sizeof(data),10);
 		
 		//====================电机故障、电流测试==============	
 			MotorDriver_GetCurrent(motor_currents);
@@ -182,7 +183,7 @@ int main(void)
     
     
     /* read */
-    Get_MPU6500_DMP_Data();
+    Get_MPU6500_DMP_Data();                
 
   }
   /* USER CODE END 3 */

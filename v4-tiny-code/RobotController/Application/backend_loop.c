@@ -8,6 +8,7 @@
 #include "backend_loop.h"
 #include "vcc_sense.h"
 #include "beep.h"
+#include "led.h"
 
 /**
  * @brief 多周期控制扩展函数 展开宏
@@ -70,7 +71,7 @@ void Backend_Loop(void){
     
     
     if(CYCLE_OK(1000)){
-        HAL_GPIO_TogglePin(FnLED1_GPIO_Port, FnLED1_Pin);
+        FnLED1_SHIFT();
     }
 
     /* 每2000ms执行一次 */
@@ -83,8 +84,8 @@ void Backend_Loop(void){
     end_time = HAL_GetTick();
     if(start_time - end_time >= BACKEND_LOOP_CYCLE_TIME ){
         /* 后台程序死循环异常 */
-        /* 后台程序每BACKEND_LOOP_CYCLE_TIME时间调用一次，若后台单次耗时会导致程序永远卡在后台进程中 */
-        /* 可以使用自定义异常函数替换while(1) */
+        /* 后台程序每BACKEND_LOOP_CYCLE_TIME时间调用一次，若后台单次耗时过长会导致程序永远卡在后台进程中 */
+        /* 可以使用自定义异常函数替换while(1)从而便于检查 */
         while(1);
     }
 

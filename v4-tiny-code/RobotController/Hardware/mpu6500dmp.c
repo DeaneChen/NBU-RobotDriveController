@@ -10,6 +10,7 @@
 
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
+#include "led.h"
 
 /* Data requested by client. */
 #define PRINT_ACCEL     (0x01)
@@ -295,11 +296,10 @@ uint8_t Get_MPU6500_DMP_Data(void){
             q2/=((unsigned long)(0x01)<<30);
             q3/=((unsigned long)(0x01)<<30);
                         
-            //运算耗时: STM32F103C8 72MHz 140us
+            //运算耗时: STM32F407VE 168MHz 296us
             mpu_roll  = atan2(2*q2*q3+2*q0*q1,(-2)*q1*q1-2*q2*q2+1)*57.3;
             mpu_pitch = asin ((-2)*q1*q3+2*q0*q2)*57.3;
             mpu_yaw   = atan2(2*(q1*q2+q0*q3),q0*q0+q1*q1-q2*q2-q3*q3)*57.3;
-            
             
             //printf("%.3lf %.3lf %.3lf\r\n",roll,pitch,yaw);
             //printf("%.0lf %.0lf %.0lf\r\n",roll,pitch,yaw);
@@ -341,7 +341,6 @@ int stm32_i2c_write(unsigned char slave_addr,
 	if(length > 24) return -1;
    
     HAL_I2C_Mem_Write(&MPU6500_I2C, slave_addr<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, data, length,0xfff);
-    HAL_Delay(1);
     return 0;
 }
 
@@ -355,7 +354,6 @@ int stm32_i2c_read(unsigned char slave_addr,
         return 0;
     
     HAL_I2C_Mem_Read(&MPU6500_I2C, slave_addr<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, data, length,0xfff);
-    HAL_Delay(1);
     return 0;
 }
 
