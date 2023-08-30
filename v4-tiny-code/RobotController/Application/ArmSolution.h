@@ -1,5 +1,6 @@
 #ifndef _ArmSolution_H_
 #define _ArmSolution_H_
+#include "main.h"
 
 void ArmDriver_Init(void);
 void SetServoAngle(int nServo,float angle);

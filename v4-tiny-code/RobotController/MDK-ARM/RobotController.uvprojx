@@ -1191,6 +1191,11 @@
               <FileType>1</FileType>
               <FilePath>..\Application\amt1450_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>ArmSolution.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\ArmSolution.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

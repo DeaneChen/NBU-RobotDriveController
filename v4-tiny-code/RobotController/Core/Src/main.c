@@ -33,6 +33,7 @@
 #include "led.h"
 #include "mpu6500dmp.h"
 #include "amt1450_uart.h"
+#include "ArmSolution.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,6 +106,11 @@ int main(void)
   MX_TIM7_Init();
   MX_ADC3_Init();
   MX_I2C1_Init();
+  MX_TIM8_Init();
+  MX_TIM9_Init();
+  MX_TIM12_Init();
+  MX_TIM13_Init();
+  MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
 
   MPU6500_DMP_Init(); // MPU6500初始化
@@ -135,6 +141,12 @@ int main(void)
   uint8_t led_val = 0; // RGB变换中Green色数值变化变量
   HAL_Delay(500);      // 延迟500ms后关闭led2
   FnLED_OFF(FnLED2);
+
+  //=================舵机控制测试=============
+  ArmDriver_Init();
+
+  uint16_t servo_pwm = 0;
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -181,6 +193,17 @@ int main(void)
     get_AMT1450Data_UART(&begin, &jump, count);
     if (jump == 2)
       position = 0.5f * (count[0] + count[1]);
+
+    //===================舵机控制测试=======================
+    servo_pwm += 5;
+    if (servo_pwm > 180)
+      servo_pwm = 0;
+    for (uint8_t i = 0; i < 8; i++)
+    {
+      SetServoAngle(i, servo_pwm);
+    }
+
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

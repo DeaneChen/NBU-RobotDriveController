@@ -9,6 +9,7 @@
 #include "vcc_sense.h"
 #include "beep.h"
 #include "led.h"
+#include "ArmSolution.h"
 
 /**
  * @brief 多周期控制扩展函数 展开宏
@@ -66,7 +67,13 @@ void Backend_Loop(void){
 
     /* 每100ms执行一次 */
     if(CYCLE_OK(100)){
-        ;
+        /*以下为机械臂缓慢移动*/
+		if (ServoTunnerOK() == 0) // 未调节完成
+		{
+			for (uint8_t i = 0; i < 8; i++) // 遍历所有舵机
+				slowPwm(i);
+		}
+
     }
     
     
