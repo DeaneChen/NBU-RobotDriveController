@@ -37,26 +37,27 @@ extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN Private defines */
 
 
-#define FRAME_BYTE_LENGTH 9 //´®¿ÚÍ¨Ñ¶Ò»Ö¡Êý¾ÝµÄ×Ö½ÚÊý£¨º¬Ö¡Í·ºÍÖ¡Î²£©£¬Æ©Èç20¸ö×Ö½ÚÎªÒ»¸öÍêÕûµÄÊý¾ÝÖ¡£¬µÚ1¸ö×Ö½ÚÖ¡Í·£¬µÚ2¸ö×Ö½Ú´ú±íÃüÁîÀàÐÍ£¬µÚ3~6×Ö½ÚÊÇÃüÁî²ÎÊý£¬µÚ7¸ö×Ö½ÚÎªÖ¡Î²
+#define FRAME_BYTE_LENGTH 9 //ï¿½ï¿½ï¿½ï¿½Í¨Ñ¶Ò»Ö¡ï¿½ï¿½ï¿½Ýµï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡Í·ï¿½ï¿½Ö¡Î²ï¿½ï¿½ï¿½ï¿½Æ©ï¿½ï¿½20ï¿½ï¿½ï¿½Ö½ï¿½ÎªÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Ö½ï¿½Ö¡Í·ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½Ö½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½3~6ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½7ï¿½ï¿½ï¿½Ö½ï¿½ÎªÖ¡Î²
 #define FRAME_START 0xA5 //Ö¡Í·
 #define FRAME_END 0x5A  //Ö¡Î²
 
 typedef struct
 {
-	char RxBuffer[FRAME_BYTE_LENGTH];   //½ÓÊÕ»º³åÇø
-	uint8_t aRxBuffer;			//½ÓÊÕÖÐ¶Ï»º³å
-	uint8_t Rx_Cnt; 		//½ÓÊÕ»º³å¼ÆÊý
-	uint8_t USART_FrameFlag;//½ÓÊÕÍêÕûÊý¾ÝÖ¡±êÖ¾£¬1ÍêÕû£¬0²»ÍêÕû
+	char RxBuffer[FRAME_BYTE_LENGTH];   //ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½
+	uint8_t aRxBuffer;			//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»ï¿½ï¿½ï¿½
+	uint8_t Rx_Cnt; 		//ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	uint8_t USART_FrameFlag;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½Ö¾ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 } UartStruct;
 
 
-extern UartStruct uart3Data;  //usart3µÄÊý¾Ý½á¹¹Ìå
+extern UartStruct uart3Data;  //usart3ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
 
+extern uint8_t uart3_rx;
 //void USART2_Init(void);
 //void USART_OUT(USART_TypeDef* USARTx, uint8_t *Data,...);
 //char *itoa(int value, char *string, int radix);
 //int fputc(int ch, FILE *f);
-void USART_GetChar(UartStruct *Uartn,uint8_t nChar); //´®¿Ú½ÓÊÕµ½Ò»¸ö×Ö½Ú
+void USART_GetChar(UartStruct *Uartn,uint8_t nChar); //ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Õµï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½
 //void USART_Process(void);
 
 /* USER CODE END Private defines */

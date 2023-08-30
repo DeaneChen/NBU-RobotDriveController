@@ -29,8 +29,10 @@
 /* USER CODE BEGIN Includes */
 #include "motor_driver.h"
 #include "motor_controller.h"
+#include "keys.h"
 #include "led.h"
 #include "mpu6500dmp.h"
+#include "amt1450_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,13 +52,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-//===============编码器测试变量===============
-volatile int32_t enc1, enc2, enc3, enc4;
-volatile int32_t test_index;
-//====================电机故障、电流测试==============
-
-uint32_t motor_currents[4];
 
 /* USER CODE END PV */
 
@@ -118,72 +113,74 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  //===================电机测试===============
+  //===================电机启动================
   MotorDriver_Init();
-  MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
-  MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
+  // MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
+  // MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(2, PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(1, PWM_DUTY_LIMIT / 2);
 
   Encoder_Init();
-  //==================电机控制器测试==============
-  MotorController_Init(500 * 30, 82, 4); // 初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
+  //==================电机转速控制器启动===============
+  MotorController_Init(500 * 30, 82, 2); // 初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
   MotorController_SetAcceleration(800);  // 设置加速度值，单位：mm/秒*秒
   MotorController_Enable(ENABLE);
+  int nSpeed = 0; // 转速变量
 
-  MotorController_SetSpeed(4, 500);
-  MotorController_SetSpeed(3, -300);
-  MotorController_SetSpeed(2, 400);
-  MotorController_SetSpeed(1, -400);
-
-  //===================Usart3通信测试===============
-  // HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
+  //===================红外传感器启动===============
+  AMT1450_UART_Cmd(ENABLE);
 
   //=================led测试=================
   FnLED_SetRGB(FnLED2, 33, 0, 0, 1);
-  uint8_t led_val = 0;
-  HAL_Delay(500);
+  uint8_t led_val = 0; // RGB变换中Green色数值变化变量
+  HAL_Delay(500);      // 延迟500ms后关闭led2
   FnLED_OFF(FnLED2);
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //===============LED测试程序=============
+
+    //
+    // 不断循环执行的代码块
+    //
+    //============================按键实现转速改变=====================
+    if (Key_Released(1) == 1)
+    {
+      nSpeed += 100;
+      MotorController_SetSpeed(1, -nSpeed);
+      MotorController_SetSpeed(2, nSpeed);
+      // MotorController_SetSpeed(3,nSpeed);
+      // MotorController_SetSpeed(4,nSpeed);
+    }
+    if (Key_Released(2) == 1)
+    {
+      nSpeed -= 100;
+      MotorController_SetSpeed(1, -nSpeed);
+      MotorController_SetSpeed(2, nSpeed);
+      // MotorController_SetSpeed(3,nSpeed);
+      // MotorController_SetSpeed(4,nSpeed);
+    }
+
+    //===============LED测试程序---绿色渐变实现=============
     FnLED_SetRGB(FnLED3, 0, led_val, 0, 1);
     led_val += 1;
     if (led_val > 66)
       led_val = 0;
     HAL_Delay(7);
 
-    //==============编码器测试程序================
-    enc1 = Encoder_GetEncCount(1);
-    enc2 = Encoder_GetEncCount(2);
-    enc3 = Encoder_GetEncCount(3);
-    enc4 = Encoder_GetEncCount(4);
-
-    //=================usart======================
-    uint8_t data[] = "hello world\r\n";
-    // HAL_UART_Transmit(&huart3,data,sizeof(data),10);
-    // printf("hello\r\n");
-
-    //====================电机故障、电流测试==============
-    MotorDriver_GetCurrent(motor_currents);
-    MotorDriver_GetLoadErrorState(1);
-    //			MotorDriver_GetLoadErrorState(2);
-    //			MotorDriver_GetLoadErrorState(3);
-    //			MotorDriver_GetLoadErrorState(4);
-
-    //===================MPU6500测试===============
+    //===================MPU6500测试（加速度传感器）===============
     /* 第 10s 校准MPU6500 为零 */
     /* 读取mpu6500数据，俯仰角数据在函数内部可以看 */
     Get_MPU6500_DMP_Data();
 
-    //==================程控开关部分测试===========
-    //		HAL_Delay(1000);
-    //		HAL_GPIO_TogglePin(SWITCH1_GPIO_Port,SWITCH1_Pin);
-    //		HAL_GPIO_TogglePin(SWITCH2_GPIO_Port,SWITCH2_Pin);
-    //		HAL_GPIO_TogglePin(SWITCH3_GPIO_Port,SWITCH3_Pin);
+    //==================红外传感器数据采集========================
+
+    uint8_t begin, jump, count[6]; // 最大6个跳变，即3条线
+    uint8_t position;
+    get_AMT1450Data_UART(&begin, &jump, count);
+    if (jump == 2)
+      position = 0.5f * (count[0] + count[1]);
   }
   /* USER CODE END 3 */
 }

@@ -27,6 +27,7 @@
 #include "motor_controller.h"
 #include "backend_loop.h"
 #include "usart.h"
+#include "amt1450_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -310,6 +311,7 @@ void TIM7_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 
 //定时器结束后回调函数，tim2~5都是编码器相关
+//tim6是转速控制，tim7是电池检测后台程序
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   
 {
 	if(htim==(&htim4))
@@ -336,7 +338,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		MotorController_SpeedTunner();
 	}else if(htim==(&htim7)){
-                Backend_Loop();
+    Backend_Loop();
   }
 }
 
@@ -351,17 +353,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   UNUSED(huart);
 
 	
-	if(huart->Instance==USART3){
+	// if(huart->Instance==USART3){
 
 		USART_GetChar(&uart3Data,uart3Data.aRxBuffer);//字节数据保存到缓冲区中
-		HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3Data.aRxBuffer, 1);   //再开启接收中断
+	// 	HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3Data.aRxBuffer, 1);   //再开启接收中断
 		
-		if(uart3Data.USART_FrameFlag==1){//如果数据帧完整，则发回数据
-				HAL_UART_Transmit(&huart3, (uint8_t *)&uart3Data.RxBuffer, FRAME_BYTE_LENGTH,10); //将收到的信息发送出去
-				while(HAL_UART_GetState(&huart3) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
-				uart3Data.Rx_Cnt = 0;
-				uart3Data.USART_FrameFlag=0;
-		}
+	// 	if(uart3Data.USART_FrameFlag==1){//如果数据帧完整，则发回数据
+	// 			HAL_UART_Transmit(&huart3, (uint8_t *)&uart3Data.RxBuffer, FRAME_BYTE_LENGTH,10); //将收到的信息发送出去
+	// 			while(HAL_UART_GetState(&huart3) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
+	// 			uart3Data.Rx_Cnt = 0;
+	// 			uart3Data.USART_FrameFlag=0;
+	// 	}
+		
+	// }
+	if(huart->Instance==USART3){
+		AMT1450_GetChar(uart3_rx,&amt1450_1_Rx);//字节数据保存到缓冲区中
+		HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3_rx, 1);   //再开启接收中断
 		
 	}
 }

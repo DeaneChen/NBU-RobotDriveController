@@ -23,6 +23,7 @@
 /* USER CODE BEGIN 0 */
 #include "stdio.h"
 UartStruct uart3Data;
+uint8_t uart3_rx;
 
 /* USER CODE END 0 */
 
@@ -54,7 +55,7 @@ void MX_USART3_UART_Init(void)
   }
   /* USER CODE BEGIN USART3_Init 2 */
 	//启动接受中断
-	HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3Data.aRxBuffer, 1);
+	HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3_rx, 1);
   /* USER CODE END USART3_Init 2 */
 
 }
@@ -84,7 +85,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
     /* USART3 interrupt Init */
-    HAL_NVIC_SetPriority(USART3_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(USART3_IRQn, 4, 0);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
 	
