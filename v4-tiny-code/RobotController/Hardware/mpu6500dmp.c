@@ -301,7 +301,7 @@ uint8_t Get_MPU6500_DMP_Data(void){
             mpu_pitch = asin ((-2)*q1*q3+2*q0*q2)*57.3;
             mpu_yaw   = atan2(2*(q1*q2+q0*q3),q0*q0+q1*q1-q2*q2-q3*q3)*57.3;
             
-            //printf("%.3lf %.3lf %.3lf\r\n",roll,pitch,yaw);
+            //printf("%.3lf,%.3lf,%.3lf\n",mpu_roll,mpu_pitch,mpu_yaw);
             //printf("%.0lf %.0lf %.0lf\r\n",roll,pitch,yaw);
             //uint8_t sendData[5]={0xA5,0,0,0,0x5A};
             //sendData[1] = (int)roll;

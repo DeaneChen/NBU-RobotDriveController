@@ -142,6 +142,7 @@ void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty) {
  * @param   nMotor 电机编号，可选值1-4
  * @param   nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details 该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
+ *          电机配置在PH/EN模式时，PWM对应的是电机方向控制，50%时，左转右转各一半，等于不动。
  *          占空比 0 ~ 100%  对应电压 0 ~ VCC。
  */
 void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty) {
@@ -365,7 +366,7 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
 uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
     
     /* 判断驱动是否关闭 */
-    if(!MotorDriver_GetDriveWorkState(nMotor)){
+    if(MotorDriver_GetDriveWorkState(nMotor)){
         /* 驱动未关闭，不允许故障诊断 */
         return 8U;
     }
@@ -424,12 +425,15 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             /* 诊断信息收集 */
             HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_SET);
             TIM1->CCR2 = 0;
+						delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin);
             HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_RESET);
             TIM1->CCR2 = PWM_DUTY_LIMIT;
+					delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 1;
             HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_SET);
             TIM1->CCR2 = PWM_DUTY_LIMIT;
+					delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 2;
             break;
         }

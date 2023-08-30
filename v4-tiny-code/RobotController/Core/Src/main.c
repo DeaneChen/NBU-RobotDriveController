@@ -112,7 +112,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  MPU6500_DMP_Init();
+  MPU6500_DMP_Init();//MPU6500初始化
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -151,11 +151,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //LED测试程序
-		
-
-
-		
+    //===============LED测试程序=============
 		FnLED_SetRGB(FnLED3,0,led_val,0,1);
 		led_val+=1;
 		if (led_val>66) 
@@ -171,6 +167,7 @@ int main(void)
 		//=================usart======================
 		uint8_t data[]="hello world\r\n";
 		//HAL_UART_Transmit(&huart3,data,sizeof(data),10);
+		//printf("hello\r\n");
 		
 		//====================电机故障、电流测试==============	
 			MotorDriver_GetCurrent(motor_currents);
@@ -179,9 +176,8 @@ int main(void)
 //			MotorDriver_GetLoadErrorState(3);
 //			MotorDriver_GetLoadErrorState(4);
 
+		//===================MPU6500测试===============
     /* 第 10s 校准MPU6500 为零 */
-    
-    
     /* read */
     Get_MPU6500_DMP_Data();                
 

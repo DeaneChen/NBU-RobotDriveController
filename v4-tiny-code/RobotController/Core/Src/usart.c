@@ -21,6 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include "stdio.h"
 UartStruct uart3Data;
 
 /* USER CODE END 0 */
@@ -139,6 +140,15 @@ void USART_GetChar(UartStruct *Uartn,uint8_t nChar) //串口接收到一个字节
 			}
 		}
 	}	
+}
+
+
+//printf 重定义函数
+int fputc(int ch,FILE *f)
+{
+    uint8_t temp[1]={ch};
+    HAL_UART_Transmit(&huart3,temp,1,0xffff);        //UartHandle处理
+		return 0;
 }
 
 /* USER CODE END 1 */
