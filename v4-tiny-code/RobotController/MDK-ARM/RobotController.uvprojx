@@ -1171,6 +1171,11 @@
               <FileType>1</FileType>
               <FilePath>..\Hardware\mpu6500dmp.c</FilePath>
             </File>
+            <File>
+              <FileName>keys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\keys.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

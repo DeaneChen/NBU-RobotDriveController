@@ -30,6 +30,7 @@
 #include "motor_driver.h"
 #include "motor_controller.h"
 #include "led.h"
+#include "keys.h"
 #include "mpu6500dmp.h"
 /* USER CODE END Includes */
 
@@ -180,8 +181,8 @@ int main(void)
     Get_MPU6500_DMP_Data();
 
     //==================程控开关部分测试===========
-    //		HAL_Delay(1000);
-    //		HAL_GPIO_TogglePin(SWITCH1_GPIO_Port,SWITCH1_Pin);
+    		if(Key_Pressed(1)==1)
+    		HAL_GPIO_TogglePin(SWITCH1_GPIO_Port,SWITCH1_Pin);
     //		HAL_GPIO_TogglePin(SWITCH2_GPIO_Port,SWITCH2_Pin);
     //		HAL_GPIO_TogglePin(SWITCH3_GPIO_Port,SWITCH3_Pin);
   }
