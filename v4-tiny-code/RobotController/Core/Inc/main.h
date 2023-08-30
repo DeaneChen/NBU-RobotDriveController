@@ -60,6 +60,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TIM_MOTOR_PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
 #define TIM_MOTOR_TIM_ENCOER_ARR MOTOR_TIM_ENCODER_ARR
+#define SWITCH1_Pin GPIO_PIN_2
+#define SWITCH1_GPIO_Port GPIOE
+#define SWITCH2_Pin GPIO_PIN_3
+#define SWITCH2_GPIO_Port GPIOE
+#define SWITCH3_Pin GPIO_PIN_4
+#define SWITCH3_GPIO_Port GPIOE
 #define VBAT_SENSE_Pin GPIO_PIN_0
 #define VBAT_SENSE_GPIO_Port GPIOC
 #define M1_IPROPI_Pin GPIO_PIN_4
