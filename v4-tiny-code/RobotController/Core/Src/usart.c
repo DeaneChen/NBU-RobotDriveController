@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "stdio.h"
-UartStruct uart3Data;
+// UartStruct uart3Data;
 uint8_t uart3_rx;
 
 /* USER CODE END 0 */
@@ -120,28 +120,28 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 
-void USART_GetChar(UartStruct *Uartn,uint8_t nChar) //串口接收到一个字节
-{
+// void USART_GetChar(UartStruct *Uartn,uint8_t nChar) //串口接收到一个字节
+// {
 
-	if(Uartn->USART_FrameFlag == 1) return;   //如果上次的数据帧还没处理过，则返回
+// 	if(Uartn->USART_FrameFlag == 1) return;   //如果上次的数据帧还没处理过，则返回
 	
-	if(Uartn->Rx_Cnt==0 && nChar == FRAME_START)
-	{
-		Uartn->RxBuffer[Uartn->Rx_Cnt++]=nChar;  //保存到缓冲区
-	}
-	else if(Uartn->Rx_Cnt>0) //接收到帧头以后才继续保存
-	{
-		Uartn->RxBuffer[Uartn->Rx_Cnt++]=nChar;  //保存到缓冲区
-		if(Uartn->Rx_Cnt>=FRAME_BYTE_LENGTH)  //数据到达一帧上限，保留完整一帧，完整帧flag设置。
-		{
-			Uartn->Rx_Cnt = 0;
-			if(Uartn->RxBuffer[FRAME_BYTE_LENGTH-1] == FRAME_END) //如果最后一个字节是帧尾，则数据帧完整
-			{
-				Uartn->USART_FrameFlag=1;
-			}
-		}
-	}	
-}
+// 	if(Uartn->Rx_Cnt==0 && nChar == FRAME_START)
+// 	{
+// 		Uartn->RxBuffer[Uartn->Rx_Cnt++]=nChar;  //保存到缓冲区
+// 	}
+// 	else if(Uartn->Rx_Cnt>0) //接收到帧头以后才继续保存
+// 	{
+// 		Uartn->RxBuffer[Uartn->Rx_Cnt++]=nChar;  //保存到缓冲区
+// 		if(Uartn->Rx_Cnt>=FRAME_BYTE_LENGTH)  //数据到达一帧上限，保留完整一帧，完整帧flag设置。
+// 		{
+// 			Uartn->Rx_Cnt = 0;
+// 			if(Uartn->RxBuffer[FRAME_BYTE_LENGTH-1] == FRAME_END) //如果最后一个字节是帧尾，则数据帧完整
+// 			{
+// 				Uartn->USART_FrameFlag=1;
+// 			}
+// 		}
+// 	}	
+// }
 
 
 //printf 重定义函数

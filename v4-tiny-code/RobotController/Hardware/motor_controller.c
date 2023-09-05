@@ -29,10 +29,7 @@ typedef struct
 MotorController controller;  // 控制器对象
 
 // MotorController_Init() 初始化函数
-// nEncoderResolution: 编码器分辨率，轮子一圈的脉冲数
-// nWheelDiameter: 轮子的直径，单位：mm
-// nMotorCount: 电机数量，如果为2，则开启A，B电机；如果为4，则开启A、B、C、D四个电机
-void MotorController_Init(uint16_t nEncoderResolution, uint8_t nWheelDiameter, uint8_t nMotorCount)
+void MotorController_Init(void)
 {
     __HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);  // 清除定时器中断标志
     HAL_TIM_Base_Start_IT(&htim6);  // 启动定时器并使能中断
@@ -44,10 +41,10 @@ void MotorController_Init(uint16_t nEncoderResolution, uint8_t nWheelDiameter, u
     controller.KI = MOTOR_CONTROLLER_KI;  // 积分系数
     controller.KD = MOTOR_CONTROLLER_KD;  // 微分系数
 
-    controller.Acc = 0;  // 加速度
-    controller.WheelDiameter = nWheelDiameter;  // 轮子直径
-    controller.EncoderResolution = nEncoderResolution;  // 编码器分辨率
-    controller.MotorEnabledCount = nMotorCount;  // 启用的电机数量
+    controller.Acc = MOTOR_CONTROLLER_ACC_LIMIT;                         // 默认加速度
+    controller.WheelDiameter = MOTOR_WHEEL_DIAMETER;                     // 轮子直径
+    controller.EncoderResolution = MOTOR_CONTROLLER_ENCODER_RESOLUTION;  // 编码器分辨率
+    controller.MotorEnabledCount = MOTOR_COUNT;                          // 启用的电机数量
 }
 
 // MotorController_SetAcceleration() 设置轮子的加速度值，单位mm/s/s，设为0相当于最小值1。
@@ -75,8 +72,8 @@ void MotorController_Enable(FunctionalState NewState)
 	for (int8_t i = 0; i < 4; i++)
 	{
 		controller.Motors[i] = (Motor){0}; // 启用速度调节器前把所有中间变量都清零。
-		controller.Motors[i].EncCnt = Encoder_GetEncCount(i + 1); //读取当前电机编码器数据，避免突变
-		controller.Motors[i].SpeedPWM = PWM_DUTY_LIMIT / 2;	//设置默认pwm值，此时为一半，正好停止。
+		controller.Motors[i].EncCnt = Encoder_GetEncCount(i + 1);        //读取当前电机编码器数据，避免突变
+		controller.Motors[i].SpeedPWM = MOTOR_DRIVER_PWM_DUTY_LIMIT / 2; //设置默认pwm值，此时为一半，正好停止。
 	}
 
 	if (NewState != DISABLE)
@@ -131,7 +128,7 @@ void MotorController_SpeedTunner(void)
 
 		int32_t nCnt = Encoder_GetEncCount(i + 1);		// 获取编码器计数值
 		// 根据编码器计数值计算当前速度
-		float fSpeedCur = 3.14 * (nCnt - motor->EncCnt) * controller.WheelDiameter * 1000 / (controller.EncoderResolution * 4 * MOTOR_CONTROLLER_PERIOD);
+		float fSpeedCur = 3.14f * (nCnt - motor->EncCnt) * controller.WheelDiameter * 1000 / (controller.EncoderResolution * 4 * MOTOR_CONTROLLER_PERIOD);
 
 		float fError = nSpeedExpect - fSpeedCur;		// 计算速度误差
 		// 根据速度误差计算PWM增量
@@ -140,9 +137,9 @@ void MotorController_SpeedTunner(void)
 		int16_t pwmSet = motor->SpeedPWM + pwmDelta;
 
 		// 如果PWM设定值超过限制，则设为限制值
-		if (pwmSet > PWM_DUTY_LIMIT)
+		if (pwmSet > MOTOR_DRIVER_PWM_DUTY_LIMIT)
 		{
-			pwmSet = PWM_DUTY_LIMIT;
+			pwmSet = MOTOR_DRIVER_PWM_DUTY_LIMIT;
 		}
 		// 如果PWM设定值小于0，则设为0
 		else if (pwmSet < 0)

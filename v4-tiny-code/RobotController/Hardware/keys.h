@@ -5,8 +5,8 @@
 
 
 
-uint8_t Key_Pressed(uint8_t nKey);  //µ±ÓĞ°´¼ü°´ÏÂÊ±·µ»Ø1£¬·ñÔò·µ»Ø0¡£nKeyÎª°´¼üË÷Òı£¬1=Key1£¬2=Key2
-uint8_t Key_Released(uint8_t nKey); //µ±ÓĞ°´¼ü°´ÏÂ²¢ÊÍ·ÅÊ±·µ»Ø1£¬·ñÔò·µ»Ø0¡£nKeyÎª°´¼üË÷Òı£¬1=Key1£¬2=Key2
+uint8_t Key_Pressed(uint8_t nKey);  //å½“æœ‰æŒ‰é”®æŒ‰ä¸‹æ—¶è¿”å›1ï¼Œå¦åˆ™è¿”å›0ã€‚nKeyä¸ºæŒ‰é”®ç´¢å¼•ï¼Œ1=Key1ï¼Œ2=Key2
+uint8_t Key_Released(uint8_t nKey); //å½“æœ‰æŒ‰é”®æŒ‰ä¸‹å¹¶é‡Šæ”¾æ—¶è¿”å›1ï¼Œå¦åˆ™è¿”å›0ã€‚nKeyä¸ºæŒ‰é”®ç´¢å¼•ï¼Œ1=Key1ï¼Œ2=Key2
 
 
 

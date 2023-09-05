@@ -311,7 +311,7 @@ void TIM7_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 
 //定时器结束后回调函数，tim2~5都是编码器相关
-//tim6是转速控制，tim7是电池检测后台程序
+//tim6是转速控制，tim7是后台程序
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   
 {
 	if(htim==(&htim4))
@@ -355,7 +355,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	
 	// if(huart->Instance==USART3){
 
-		USART_GetChar(&uart3Data,uart3Data.aRxBuffer);//字节数据保存到缓冲区中
+	//	USART_GetChar(&uart3Data,uart3Data.aRxBuffer);//字节数据保存到缓冲区中
 	// 	HAL_UART_Receive_IT(&huart3, (uint8_t *)&uart3Data.aRxBuffer, 1);   //再开启接收中断
 		
 	// 	if(uart3Data.USART_FrameFlag==1){//如果数据帧完整，则发回数据
