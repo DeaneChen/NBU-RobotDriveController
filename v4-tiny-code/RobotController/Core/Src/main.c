@@ -115,6 +115,7 @@ int main(void)
 
   //===================电机启动================
   MotorDriver_Init();
+  //一旦开启start后，就开始耗电了，一个电机大概120ma的电流,MotorDriver_OFF才能关闭耗电。
   // MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
   // MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(2, PWM_DUTY_LIMIT / 2);
@@ -122,7 +123,7 @@ int main(void)
 
   Encoder_Init();
   //==================电机转速控制器启动===============
-  MotorController_Init(500 * 30, 82, 2); // 初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
+  MotorController_Init(330, 82, 2); // 初始化调速器，参数1：轮子转一圈输出的脉冲个数；参数2：轮子直径，单位mm；参数3：几个电机需要调速
   MotorController_SetAcceleration(800);  // 设置加速度值，单位：mm/秒*秒
   MotorController_Enable(ENABLE);
   int nSpeed = 0; // 转速变量
