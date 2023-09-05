@@ -89,21 +89,21 @@ void MotorDriver_Init(void) {
         HAL_GPIO_WritePin(OFF_Port, OFF_Pin, GPIO_PIN_RESET);
 
         /* 设定电机处于停转状态，并设置占空比为50% */
-        MotorDriver_Stop(motor, PWM_DUTY_LIMIT / 2);
+        MotorDriver_Stop(motor, MOTOR_DRIVER_PWM_DUTY_LIMIT / 2);
     }
 }
 
 /**
  * @brief  电机启动函数
  * @param  nMotor 电机编号，可选值1-4
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
+ * @param  nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%
  */
 void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty) {
     
     /* 输入参数检验 */
     uint16_t nDutySet;
-    if (nDuty > PWM_DUTY_LIMIT) {
-        nDutySet = PWM_DUTY_LIMIT;
+    if (nDuty > MOTOR_DRIVER_PWM_DUTY_LIMIT) {
+        nDutySet = MOTOR_DRIVER_PWM_DUTY_LIMIT;
     } else {
         nDutySet = nDuty;
     }
@@ -140,7 +140,7 @@ void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty) {
 /**
  * @brief   设置电机驱动的占空比
  * @param   nMotor 电机编号，可选值1-4
- * @param   nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
+ * @param   nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details 该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
  *          电机配置在PH/EN模式时，PWM对应的是电机方向控制，50%时，左转右转各一半，等于不动。
  *          占空比 0 ~ 100%  对应电压 0 ~ VCC。
@@ -149,8 +149,8 @@ void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty) {
     
     /* 输入参数检验 */
     uint16_t nDutySet;
-    if (nDuty > PWM_DUTY_LIMIT) {
-        nDutySet = PWM_DUTY_LIMIT;
+    if (nDuty > MOTOR_DRIVER_PWM_DUTY_LIMIT) {
+        nDutySet = MOTOR_DRIVER_PWM_DUTY_LIMIT;
     } else {
         nDutySet = nDuty;
     }
@@ -183,8 +183,8 @@ void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty) {
     
     /* 输入参数检验 */
     uint16_t nDutySet;
-    if (nDuty > PWM_DUTY_LIMIT) {
-        nDutySet = PWM_DUTY_LIMIT;
+    if (nDuty > MOTOR_DRIVER_PWM_DUTY_LIMIT) {
+        nDutySet = MOTOR_DRIVER_PWM_DUTY_LIMIT;
     } else {
         nDutySet = nDuty;
     }
@@ -334,9 +334,9 @@ uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents) {
         error |= HAL_ADC_PollForConversion(&hadc1,2); /* ADC采样等待 超时2ms */
         uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
         /* 整形运算版本 将 x3075 拆分两次以优化整形运算的舍入误差 */
-        // adc_value = ((adc_value * ADC_REF_VOLTAGE * 123) >> 12) * 25 / 1000;
+        // adc_value = ((adc_value * ADC_REF_VOLTAGE * 123) >> 12) * 25 / MOTOR_CURRENT_DETECTION_R_SAMPLE;
         /* 浮点运算版本 带FPU的情况下，浮点运算可能速度相差无几 */
-        adc_value = (uint32_t)(adc_value * ADC_REF_VOLTAGE * 3075.0f * 0.000244140625f * 0.001f);
+        adc_value = (uint32_t)(adc_value * ADC_REF_VOLTAGE * 3075.0f * 0.000244140625f * MOTOR_CURRENT_DETECTION_R_SAMPLE_REC);
         *(motor_currents + i - 1) = adc_value;
     }
     HAL_ADC_Stop(&hadc1);
@@ -382,10 +382,10 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR4 = 0;
             error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin);
             HAL_GPIO_WritePin(M1_IN1_GPIO_Port, M1_IN1_Pin, GPIO_PIN_RESET);
-            TIM1->CCR4 = PWM_DUTY_LIMIT;
+            TIM1->CCR4 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin) << 1;
             HAL_GPIO_WritePin(M1_IN1_GPIO_Port, M1_IN1_Pin, GPIO_PIN_SET);
-            TIM1->CCR4 = PWM_DUTY_LIMIT;
+            TIM1->CCR4 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M1_nFAULT_GPIO_Port, M1_nFAULT_Pin) << 2;
             break;
         }
@@ -397,10 +397,10 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR1 = 0;
             error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin);
             HAL_GPIO_WritePin(M2_IN1_GPIO_Port, M2_IN1_Pin, GPIO_PIN_RESET);
-            TIM1->CCR1 = PWM_DUTY_LIMIT;
+            TIM1->CCR1 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin) << 1;
             HAL_GPIO_WritePin(M2_IN1_GPIO_Port, M2_IN1_Pin, GPIO_PIN_SET);
-            TIM1->CCR1 = PWM_DUTY_LIMIT;
+            TIM1->CCR1 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M2_nFAULT_GPIO_Port, M2_nFAULT_Pin) << 2;
             break;
         }
@@ -412,10 +412,10 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
             TIM1->CCR3 = 0;
             error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin);
             HAL_GPIO_WritePin(M3_IN1_GPIO_Port, M3_IN1_Pin, GPIO_PIN_RESET);
-            TIM1->CCR3 = PWM_DUTY_LIMIT;
+            TIM1->CCR3 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin) << 1;
             HAL_GPIO_WritePin(M3_IN1_GPIO_Port, M3_IN1_Pin, GPIO_PIN_SET);
-            TIM1->CCR3 = PWM_DUTY_LIMIT;
+            TIM1->CCR3 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
             error |= (uint8_t)HAL_GPIO_ReadPin(M3_nFAULT_GPIO_Port, M3_nFAULT_Pin) << 2;
             break;
         }
@@ -428,11 +428,11 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor) {
 						delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin);
             HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_RESET);
-            TIM1->CCR2 = PWM_DUTY_LIMIT;
+            TIM1->CCR2 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
 					delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 1;
             HAL_GPIO_WritePin(M4_IN1_GPIO_Port, M4_IN1_Pin, GPIO_PIN_SET);
-            TIM1->CCR2 = PWM_DUTY_LIMIT;
+            TIM1->CCR2 = MOTOR_DRIVER_PWM_DUTY_LIMIT;
 					delay_us(100);
             error |= (uint8_t)HAL_GPIO_ReadPin(M4_nFAULT_GPIO_Port, M4_nFAULT_Pin) << 2;
             break;
