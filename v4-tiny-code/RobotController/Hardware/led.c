@@ -41,7 +41,9 @@ void FnLED_SetRGB(uint8_t id, uint8_t R, uint8_t G, uint8_t B, uint8_t is_show) 
     buffer[id][1] = R;
     buffer[id][2] = B;
 
-    ws2812_show();
+    if(is_show){
+        ws2812_show();
+    }
 }
 
 /* 私有函数定义 ---------------------------------------------------------------------- */

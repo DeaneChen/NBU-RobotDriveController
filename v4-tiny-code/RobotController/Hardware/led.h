@@ -33,9 +33,9 @@ extern void FnLED_OFF(uint8_t FnLED_ID);
  * @brief  设置 序号为id 的多彩led的RGB值
  * @param  FnLED_ID 多彩LED的ID序号，可选值为 FnLED2（0）或 FnLED3（1）
  *                  出于数组管理的考虑，第一个多彩LED（FnLED2）的序号为0
- * @param  R        红色亮度分量（0~255）
- * @param  G        绿色亮度分量（0~255）
- * @param  B        蓝色亮度分量（0~255）
+ * @param  R        红色亮度分量（0 ~ 255）
+ * @param  G        绿色亮度分量（0 ~ 255）
+ * @param  B        蓝色亮度分量（0 ~ 255）
  * @param  is_show  刷新控制 当is_show为1（True）时，则将设定的颜色直接显示在多彩LED上，
  *                           这会刷新显示所有多彩LED的颜色。
  *                           当is_show为0（False）时，则只变更颜色缓冲区，暂不刷新显示，
