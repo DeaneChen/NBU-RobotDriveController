@@ -114,6 +114,7 @@ extern uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
  * @brief  获取驱动的全桥负载故障状态
  * @param  nMotor 电机编号，可选值1-4
  * @note   该函数必须在驱动关闭的状态下调用，该函数可以用于判断负载故障情况，例如负载短路，负载开路，负载短路到VCC，短路到GND等
+ *         该函数在默认配置下处于不可用状态，若要启用需要根据 DRV8243HW 芯片的电机驱动调整电路板上的配置电阻。
  * @retval 0 负载正常
  * @retval 1 负载开路
  * @retval 2 负载GND短路
