@@ -20,8 +20,17 @@ extern __IO int16_t MotorDirver_Tim5_Update_Count;
 extern __IO int16_t MotorDirver_Tim3_Update_Count;
 extern __IO int16_t MotorDirver_Tim2_Update_Count;
 
-/* PWM占空比最大值，0~PWM_DUTY_LIMIT 对应 0~100% */
-#define PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
+
+/* !!! 通常情况下，在config.h中修改即可 !!! */
+#ifndef MOTOR_PWM_DUTY_LIMIT  /* 如果 MOTOR_PWM_DUTY_LIMIT 未在外部配置文件定义才生效 */
+    #define MOTOR_PWM_DUTY_LIMIT 10000  
+#endif
+#ifndef MOTOR_COUNT           /* 如果 MOTOR_COUNT 未在外部配置文件定义才生效 */
+    #define MOTOR_COUNT       4
+#endif
+
+/* PWM占空比最大值，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0~100% */
+#define MOTOR_DRIVER_PWM_DUTY_LIMIT MOTOR_PWM_DUTY_LIMIT
 
 /**
  * @brief  电机驱动初始化函数
@@ -35,7 +44,7 @@ extern void MotorDriver_Init(void);
 /**
  * @brief  设置电机驱动的PWM占空比
  * @param  nMotor 电机编号，可选值1-4
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%
+ * @param  nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details  该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
  *           占空比 0 ~ 100%  对应电压 0 ~ VCC。
  */
@@ -44,14 +53,14 @@ extern void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty);
 /**
  * @brief  电机启动函数
  * @param  nMotor 电机编号，可选值1-4
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
+ * @param  nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  */
 extern void MotorDriver_Start(uint8_t nMotor, uint16_t nDuty);
 
 /**
  * @brief  电机停止函数
  * @param  nMotor 电机编号，可选值1-4
- * @param  nDuty  PWM占空比，0 ~ PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
+ * @param  nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%，占空比 50% 时 电机转速为 0
  * @details  每次停止后，需要用MotorDriver_Start重新启动电机
  */
 extern void MotorDriver_Stop(uint8_t nMotor, uint16_t nDuty);
@@ -105,6 +114,7 @@ extern uint8_t MotorDriver_GetCurrent(uint32_t* motor_currents);
  * @brief  获取驱动的全桥负载故障状态
  * @param  nMotor 电机编号，可选值1-4
  * @note   该函数必须在驱动关闭的状态下调用，该函数可以用于判断负载故障情况，例如负载短路，负载开路，负载短路到VCC，短路到GND等
+ *         该函数在默认配置下处于不可用状态，若要启用需要根据 DRV8243HW 芯片的电机驱动调整电路板上的配置电阻。
  * @retval 0 负载正常
  * @retval 1 负载开路
  * @retval 2 负载GND短路
@@ -122,6 +132,13 @@ uint8_t MotorDriver_GetLoadErrorState(uint8_t nMotor);
  * 编码器3，A-PB4(TIM3-1)，B-PB5（TIM3-2）
  * 编码器4，A-PA0(TIM5-1)，B-PA1（TIM5-2）
  */
+
+#ifndef MOTOR_TIM_ENCODER_ARR  /* 如果 MOTOR_TIM_ENCODER_ARR 未在外部配置文件定义 */
+    #define MOTOR_TIM_ENCODER_ARR 60000
+#endif
+#ifndef ENCODER_COUNT          /* 如果 ENCODER_COUNT 未在外部配置文件定义才生效 */
+    #define ENCODER_COUNT       MOTOR_COUNT
+#endif
 
 /* 编码器范围 */
 #define ENC_TIM_ARR MOTOR_TIM_ENCODER_ARR
@@ -153,6 +170,20 @@ extern uint16_t Encoder_GetCNT(uint8_t nEncoder);
 extern int32_t Encoder_GetEncCount(uint8_t nEncoder);
 
 
+/* !!! 通常情况下，在config.h中修改即可 !!! */
+/* 相关参数定义 - 若未在外部定义则生效 */
+#ifndef MOTOR_CURRENT_DETECTION_R_SAMPLE_REC
+    #define MOTOR_CURRENT_DETECTION_R_SAMPLE_REC   (0.001f)
+#endif
+#ifndef MOTOR_CURRENT_DETECTION_R_SAMPLE
+    #define MOTOR_CURRENT_DETECTION_R_SAMPLE       (1000f)
+#endif 
+#ifndef IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION
+    #define IS_ENABLE_MOTOR_CURRENT_FULL_DETECTION (1)
+#endif
+#ifndef IS_ENABLE_MOTOR_CURRENT_DETECTION
+    #define IS_ENABLE_MOTOR_CURRENT_DETECTION      (1)
+#endif
 
 #endif
 
