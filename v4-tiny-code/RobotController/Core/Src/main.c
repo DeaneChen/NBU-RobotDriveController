@@ -121,10 +121,10 @@ int main(void)
 
   //===================电机测试===============
   MotorDriver_Init();
-  MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
-  MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
-  MotorDriver_Start(2, PWM_DUTY_LIMIT / 2);
-  MotorDriver_Start(1, PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(4, MOTOR_PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(3, MOTOR_PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(2, MOTOR_PWM_DUTY_LIMIT / 2);
+  MotorDriver_Start(1, MOTOR_PWM_DUTY_LIMIT / 2);
 
   Encoder_Init();
   //==================电机控制器测试==============
