@@ -2,7 +2,7 @@
  * @file  config.h
  * @brief 全局配置文件
  * @note  该文件整合了机器人控制器的大部分基本控制参数，从而便于系统的调整
- *        默认情况下，该文件已被 main.h 包含 
+ *        默认情况下，该文件已被 main.h 包含
  *        采用 $ 标记的为不了解的情况下不推荐修改的参数
  */
 #ifndef __CONFIG_H
@@ -18,9 +18,16 @@
 
 /* ------------------------------------------------- 基本控制部分 ------- */
 
-/* 低电量报警电压 单位mV */
-#define LOW_VBAT_ALARM_THRESHOLD  (11100)
-
+/* 3S电池低电量报警电压 单位mV */
+#define LOW_3S_VBAT_ALARM_THRESHOLD (11100)
+/* 4S电池低电量报警电压 单位mV */
+#define LOW_4S_VBAT_ALARM_THRESHOLD (15200)
+/* 3S电池最高电压 单位mV */
+#define MAX_3S_VBAT (12600)
+/* 4S电池最高电压 单位mV */
+#define MAX_4S_VBAT (16800)
+/* 无电池调试电压 单位mV */
+#define DEBUG_V_WITHOUT_BAT (5000)
 /* $ 后台循环程序的调用时间周期，需根据中断周期设定 单位ms */
 #define BACKEND_LOOP_CYCLE_TIME   (20)
 
