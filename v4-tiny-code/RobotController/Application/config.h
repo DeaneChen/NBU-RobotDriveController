@@ -2,7 +2,7 @@
  * @file  config.h
  * @brief 全局配置文件
  * @note  该文件整合了机器人控制器的大部分基本控制参数，从而便于系统的调整
- *        默认情况下，该文件已被 main.h 包含 
+ *        默认情况下，该文件已被 main.h 包含
  *        采用 $ 标记的为不了解的情况下不推荐修改的参数
  */
 #ifndef __CONFIG_H
@@ -19,8 +19,9 @@
 /* ------------------------------------------------- 基本控制部分 ------- */
 
 /* 低电量报警电压 单位mV */
-#define LOW_VBAT_ALARM_THRESHOLD  (11100)
-
+#define LOW_VBAT_ALARM_THRESHOLD (11100)
+/* USB连接供电电压 单位mV */
+#define LOW_VUSB_NOALARM_VOLTAGE (5000)
 /* $ 后台循环程序的调用时间周期，需根据中断周期设定 单位ms */
 #define BACKEND_LOOP_CYCLE_TIME   (20)
 
@@ -32,7 +33,7 @@
 /* 电机最大加速度限制 单位mm/s^(-2) */
 #define MOTOR_CONTROLLER_ACC_LIMIT          (800)
 /* $ 电机闭环控制器控制周期，使用了定时器6，需根据定时器6中断周期设定 单位ms  */
-#define MOTOR_CONTROLLER_PERIOD             (10) 
+#define MOTOR_CONTROLLER_PERIOD             (10)
 /* 机闭环控制器的PID参数初始值，运行中可通过调用函数改变 */
 #define MOTOR_CONTROLLER_KP      (20)
 #define MOTOR_CONTROLLER_KI      (4)

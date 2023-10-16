@@ -58,7 +58,7 @@ void Backend_Loop(void){
     /* 获取电池电压 */
     uint16_t vbat = Get_BattryVoltage();
     /* 低电压报警 */
-    if( vbat <= LOW_VBAT_ALARM_THRESHOLD ){
+    if (vbat <= LOW_VBAT_ALARM_THRESHOLD && vbat >= LOW_VUSB_NOALARM_VOLTAGE){
         BEEP_ON();
     }else if(IS_BEEP_ON()){
         BEEP_OFF();
