@@ -11,9 +11,8 @@
 #ifndef __MOVE_CONTROLLER_H
 #define __MOVE_CONTROLLER_H
 
-#include "stm32f4xx.h"
 #include "config.h"
-#include "function.h"
+#include "pid_controller.h"
 
 /**
  *  机器人位置环和角度环相关定义

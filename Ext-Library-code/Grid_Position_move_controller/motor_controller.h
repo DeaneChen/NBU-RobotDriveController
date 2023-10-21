@@ -10,8 +10,7 @@
 #ifndef __MOTOR_CONTROLLER_H
 #define __MOTOR_CONTROLLER_H
 
-#include "stm32f4xx.h"
-#include "function.h"
+#include "pid_controller.h"
 
 #define ENCODER_RESOLUTION       (13500)  /* 编码器分辨率 */
 
