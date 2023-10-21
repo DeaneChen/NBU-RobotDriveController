@@ -46,7 +46,7 @@ extern void MotorDriver_Init(void);
  * @param  nMotor 电机编号，可选值1-4
  * @param  nDuty  PWM占空比，0 ~ MOTOR_DRIVER_PWM_DUTY_LIMIT 对应 0 ~ 100%
  * @details  该函数通过设置PWM的占空比，控制电机驱动H桥的开关周期，从而实现电机的降压控制。
- *           占空比 0 ~ 100%  对应电压 0 ~ VCC。
+ *           占空比 0 ~ 100%  对应电压 -VCC ~ +VCC。
  */
 extern void MotorDriver_SetPWMDuty(uint8_t nMotor, uint16_t nDuty);
 
