@@ -132,7 +132,7 @@ void ws2812_show(void) {
 
     /* 基于单极性归零码帧控制的故意延迟，防止连续通讯修改RGB颜色时，芯片通信无结果 */
     int current_time = HAL_GetTick();
-    if (current_time - last_time < 0) {
+    if (current_time - last_time <= 1) {
         HAL_Delay(1); 
     }
     last_time=current_time;
