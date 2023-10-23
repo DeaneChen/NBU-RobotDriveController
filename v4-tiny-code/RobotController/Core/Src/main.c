@@ -113,7 +113,7 @@ int main(void)
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
 
-  MPU6500_DMP_Init(); // MPU6500初始化
+  MPU6500_DMP_Init(); // MPU6500加速度传感器初始化
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,8 +121,9 @@ int main(void)
 
   //===================电机启动================
   MotorDriver_Init();
-  // MotorDriver_Start(4, MOTOR_DRIVER_PWM_DUTY_LIMIT / 2);
-  // MotorDriver_Start(3, MOTOR_DRIVER_PWM_DUTY_LIMIT / 2);
+  //一旦开启start后，就开始耗电了，一个电机大概120ma的电流（根据电机内阻情况）,MotorDriver_OFF才能关闭耗电。
+  // MotorDriver_Start(4, PWM_DUTY_LIMIT / 2);
+  // MotorDriver_Start(3, PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(2, MOTOR_DRIVER_PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(1, MOTOR_DRIVER_PWM_DUTY_LIMIT / 2);
 
@@ -185,13 +186,17 @@ int main(void)
     Get_MPU6500_DMP_Data();
 
     //==================红外传感器数据采集========================
-
-    uint8_t begin, jump, count[6]; // 最大6个跳变，即3条线
-    uint8_t position;
+    //get_AMT1450Data_UART函数作用在函数内部说明。
     get_AMT1450Data_UART(&begin, &jump, count);
     if (jump == 2)
       position = 0.5f * (count[0] + count[1]);
-
+    //根据检测到的循迹线位置，显示不同的LED颜色。
+    if (position>72)
+    {
+      FnLED_SetRGB(FnLED2, 33, 0, 0, 1);
+    }else{
+      FnLED_SetRGB(FnLED2, 0, 0, 33, 1);
+    }
     //===================舵机控制测试=======================
     servo_pwm += 5;
     if (servo_pwm > 180)
@@ -202,6 +207,8 @@ int main(void)
     }
 
     HAL_Delay(500);
+
+    
   }
   /* USER CODE END 3 */
 }

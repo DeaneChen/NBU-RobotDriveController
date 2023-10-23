@@ -22,8 +22,11 @@ void AMT1450_UART_Cmd(FunctionalState NewState) {
 
 /**
  * @brief: 获取amt1450数据（压缩数据）
- * @param {type}
- * @retval: begin_Color: 1/黑；0/白
+ * @param  begin_Color: 传感器最左端的颜色情况1/黑；0/白
+ * @param  jump_Count：传感器从左至右检测到的发生颜色跳变的次数
+ * @param  jump_Location：作为数组变量，数组下标是对应第几次颜色跳变的位置。
+ * @retval :请传入对应类型变量的地址
+ * 注：传感器最左端为0，最右端位置为144，中心位置为72.
  */
 void get_AMT1450Data_UART(uint8_t* begin_Color, uint8_t* jump_Count, uint8_t* jump_Location) {
     *begin_Color = (amt1450_1_Rx.ValidData[1] & 0x80) >> 7;
@@ -33,8 +36,14 @@ void get_AMT1450Data_UART(uint8_t* begin_Color, uint8_t* jump_Count, uint8_t* ju
     }
 }
 
+//下面作为传感器的全局变量，已经在头文件引出，可以在其他文件引用头文件后使用
+// begin: 传感器最左端的颜色情况1/黑；0/白
+// jump：传感器从左至右检测到的发生颜色跳变的次数
+// count：作为数组变量，数组下标是对应第几次颜色跳变的位置
+// position：代表根据数据处理，当发生两次颜色跳变时，在两个跳变点位置取中值得到的中心点
 uint8_t begin, jump, count[6];  // 最大6个跳变，即3条线
 uint8_t position;
+
 void amt1450_Test_UART(void) {
     while (1) {
         get_AMT1450Data_UART(&begin, &jump, count);
