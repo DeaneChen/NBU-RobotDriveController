@@ -35,5 +35,6 @@ void amt1450_Test_UART(void);
 
 
 extern amt1450_UART_Rx_t amt1450_1_Rx;
-
+extern uint8_t begin, jump, count[6];  // 最大6个跳变，即3条线
+extern uint8_t position;
 #endif
