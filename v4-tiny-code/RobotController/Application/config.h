@@ -23,7 +23,7 @@
 /* 4S电池低电量报警电压 单位mV */
 #define LOW_4S_VBAT_ALARM_THRESHOLD (15200)
 /* 3S电池最高电压 单位mV */
-#define MAX_3S_VBAT (12600)
+#define MAX_3S_VBAT (12800)
 /* 4S电池最高电压 单位mV */
 #define MAX_4S_VBAT (16800)
 /* 无电池调试电压 单位mV */
