@@ -52,10 +52,10 @@
 
 /* USER CODE BEGIN PV */
 
-//===============±àÂëÆ÷²âÊÔ±äÁ¿===============
+//===============ç¼–ç å™¨æµ‹è¯•å˜é‡===============
 volatile int32_t enc1, enc2, enc3, enc4;
 volatile int32_t test_index;
-//====================µç»ú¹ÊÕÏ¡¢µçÁ÷²âÊÔ==============
+//====================ç”µæœºæ•…éšœã€ç”µæµæµ‹è¯•==============
 
 uint32_t motor_currents[4];
 
@@ -113,13 +113,13 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  MPU6500_DMP_Init(); // MPU6500³õÊ¼»¯
+  MPU6500_DMP_Init(); // MPU6500åˆå§‹åŒ–
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  //===================µç»ú²âÊÔ===============
+  //===================ç”µæœºæµ‹è¯•===============
   MotorDriver_Init();
   MotorDriver_Start(4, MOTOR_PWM_DUTY_LIMIT / 2);
   MotorDriver_Start(3, MOTOR_PWM_DUTY_LIMIT / 2);
@@ -127,9 +127,8 @@ int main(void)
   MotorDriver_Start(1, MOTOR_PWM_DUTY_LIMIT / 2);
 
   Encoder_Init();
-  //==================µç»ú¿ØÖÆÆ÷²âÊÔ==============
-  MotorController_Init(500 * 30, 82, 4); // ³õÊ¼»¯µ÷ËÙÆ÷£¬²ÎÊı1£ºÂÖ×Ó×ªÒ»È¦Êä³öµÄÂö³å¸öÊı£»²ÎÊı2£ºÂÖ×ÓÖ±¾¶£¬µ¥Î»mm£»²ÎÊı3£º¼¸¸öµç»úĞèÒªµ÷ËÙ
-  MotorController_SetAcceleration(800);  // ÉèÖÃ¼ÓËÙ¶ÈÖµ£¬µ¥Î»£ºmm/Ãë*Ãë
+  //==================ç”µæœºè½¬é€Ÿæ§åˆ¶å™¨å¯åŠ¨===============
+  MotorController_Init();                // åˆå§‹åŒ–è°ƒé€Ÿå™¨
   MotorController_Enable(ENABLE);
 
   MotorController_SetSpeed(4, 500);
@@ -137,10 +136,10 @@ int main(void)
   MotorController_SetSpeed(2, 400);
   MotorController_SetSpeed(1, -400);
 
-  //===================Usart3Í¨ĞÅ²âÊÔ===============
+  //===================Usart3é€šä¿¡æµ‹è¯•===============
   // HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer, 1);
 
-  //=================led²âÊÔ=================
+  //=================ledæµ‹è¯•=================
   FnLED_SetRGB(FnLED2, 33, 0, 0, 1);
   uint8_t led_val = 0;
   HAL_Delay(500);
@@ -150,14 +149,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //===============LED²âÊÔ³ÌĞò=============
+    //===============LEDæµ‹è¯•ç¨‹åº=============
     FnLED_SetRGB(FnLED3, 0, led_val, 0, 1);
     led_val += 1;
     if (led_val > 66)
       led_val = 0;
     HAL_Delay(7);
 
-    //==============±àÂëÆ÷²âÊÔ³ÌĞò================
+    //==============ç¼–ç å™¨æµ‹è¯•ç¨‹åº================
     enc1 = Encoder_GetEncCount(1);
     enc2 = Encoder_GetEncCount(2);
     enc3 = Encoder_GetEncCount(3);
@@ -168,19 +167,19 @@ int main(void)
     // HAL_UART_Transmit(&huart3,data,sizeof(data),10);
     // printf("hello\r\n");
 
-    //====================µç»ú¹ÊÕÏ¡¢µçÁ÷²âÊÔ==============
+    //====================ç”µæœºæ•…éšœã€ç”µæµæµ‹è¯•==============
     MotorDriver_GetCurrent(motor_currents);
     MotorDriver_GetLoadErrorState(1);
     //			MotorDriver_GetLoadErrorState(2);
     //			MotorDriver_GetLoadErrorState(3);
     //			MotorDriver_GetLoadErrorState(4);
 
-    //===================MPU6500²âÊÔ===============
-    /* µÚ 10s Ğ£×¼MPU6500 ÎªÁã */
-    /* ¶ÁÈ¡mpu6500Êı¾İ£¬¸©Ñö½ÇÊı¾İÔÚº¯ÊıÄÚ²¿¿ÉÒÔ¿´ */
+    //===================MPU6500æµ‹è¯•===============
+    /* ç¬¬ 10s æ ¡å‡†MPU6500 ä¸ºé›¶ */
+    /* è¯»å–mpu6500æ•°æ®ï¼Œä¿¯ä»°è§’æ•°æ®åœ¨å‡½æ•°å†…éƒ¨å¯ä»¥çœ‹ */
     Get_MPU6500_DMP_Data();
 
-    //==================³Ì¿Ø¿ª¹Ø²¿·Ö²âÊÔ===========
+    //==================ç¨‹æ§å¼€å…³éƒ¨åˆ†æµ‹è¯•===========
     		if(Key_Pressed(1)==1)
     		HAL_GPIO_TogglePin(SWITCH1_GPIO_Port,SWITCH1_Pin);
     //		HAL_GPIO_TogglePin(SWITCH2_GPIO_Port,SWITCH2_Pin);
@@ -220,8 +219,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;

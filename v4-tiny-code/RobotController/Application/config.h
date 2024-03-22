@@ -23,7 +23,7 @@
 /* 4S电池低电量报警电压 单位mV */
 #define LOW_4S_VBAT_ALARM_THRESHOLD (15200)
 /* 3S电池最高电压 单位mV */
-#define MAX_3S_VBAT (12600)
+#define MAX_3S_VBAT (12800)
 /* 4S电池最高电压 单位mV */
 #define MAX_4S_VBAT (16800)
 /* 无电池调试电压 单位mV */
@@ -31,6 +31,19 @@
 /* $ 后台循环程序的调用时间周期，需根据中断周期设定 单位ms */
 #define BACKEND_LOOP_CYCLE_TIME   (20)
 
+/* ------------ 电机闭环控制相关 -------------- */
+/* 编码器等效分辨率，即轮子转一圈输出的脉冲个数，通常=编码器其分辨率x电机减速比 */
+#define MOTOR_CONTROLLER_ENCODER_RESOLUTION (15000)
+/* 电机外接车轮的直径 单位mm 可为float类型数据 */
+#define MOTOR_WHEEL_DIAMETER                (82.0f)
+/* 电机最大加速度限制 单位mm/s^(-2) */
+#define MOTOR_CONTROLLER_ACC_LIMIT          (800)
+/* $ 电机闭环控制器控制周期，使用了定时器6，需根据定时器6中断周期设定 单位ms  */
+#define MOTOR_CONTROLLER_PERIOD             (10) 
+/* 机闭环控制器的PID参数初始值，运行中可通过调用函数改变 */
+#define MOTOR_CONTROLLER_KP      (20)
+#define MOTOR_CONTROLLER_KI      (4)
+#define MOTOR_CONTROLLER_KD      (0.8f)
 
 /* ------------------------------------------------- 核心驱动部分 ------- */
 
@@ -65,7 +78,8 @@
 #define MOTOR_PWM_DUTY_LIMIT  (10000)
 /* $ 编码器范围 */
 #define MOTOR_TIM_ENCODER_ARR (60000)
-
+/* $ 舵机控制的PWM占空比最大值 */
+#define SERVO_PWM_DUTY_LIMIT  (10000)
 
 
 
