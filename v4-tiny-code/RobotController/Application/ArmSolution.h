@@ -10,7 +10,7 @@ uint8_t ServoTunnerOK(void);
 void ArmSolution(double x,double y);
 void Arm_Grab(void);
 	
-
+void Servo_init(uint8_t nServo,int angle);
 void slowPwm(uint8_t nServo);
 
 #endif

@@ -12,14 +12,66 @@ uint16_t targetPwm[8] = {250};
 
 
 void ArmDriver_Init(void){
-  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim13, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim13, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+
+	//直接给pwm赋初值  初始设定为初始机械臂状态  每次上电前应该把机械臂归位
+	//下面为使用举例
+	// Servo_init(0,177);
+	// Servo_init(1,162);
+	// Servo_init(2,68);
+	// Servo_init(3,60);
+}
+void Servo_init(uint8_t nServo,int angle)
+{
+	volatile uint32_t *currentPwm;//指针指向不同的pwm控制地址，方便统一修改。
+	switch (nServo)
+	{
+	case 0:
+		currentPwm = &htim8.Instance->CCR3;
+		break;
+	case 1:
+		currentPwm = &htim8.Instance->CCR4;
+		break;
+	case 2:
+		currentPwm = &htim12.Instance->CCR1;
+		break;
+	case 3:
+		currentPwm = &htim12.Instance->CCR2;
+		break;
+	case 4:
+		currentPwm = &htim9.Instance->CCR1;
+		break;
+	case 5:
+		currentPwm = &htim9.Instance->CCR2;
+		break;
+	case 6:
+		currentPwm = &htim13.Instance->CCR1;
+		break;
+	case 7:
+		currentPwm = &htim14.Instance->CCR1;
+		break;
+	default:
+		return;
+}
+	if (angle < 0) // 角度限制
+		return;
+	int pwm = angle * 1.0f / 90 / 20 * PWM_DUTY_LIMIT + 250; // 解算出对应的pwm波
+
+	// pwm限制，防止动作错误
+	if (pwm > 1250)
+		pwm = 1250;
+	if (pwm < 250)
+		pwm = 250;
+
+	*currentPwm = pwm;	//设置定时器CCR中PWM值
+	targetPwm[nServo]=pwm;	//设置目标PWM值
 }
 
 /**

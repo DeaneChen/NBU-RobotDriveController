@@ -65,8 +65,8 @@ void Backend_Loop(void){
         BEEP_OFF();
     }
 
-    /* 每100ms执行一次 */
-    if(CYCLE_OK(100)){
+    /* 每50ms执行一次 */
+    if(CYCLE_OK(50)){
         /*以下为机械臂缓慢移动*/
 		if (ServoTunnerOK() == 0) // 未调节完成
 		{
@@ -89,12 +89,12 @@ void Backend_Loop(void){
     /* ----------------- 后台程序结束 ------------------ */
 
     end_time = HAL_GetTick();
-    if(start_time - end_time >= BACKEND_LOOP_CYCLE_TIME ){
-        /* 后台程序死循环异常 */
-        /* 后台程序每BACKEND_LOOP_CYCLE_TIME时间调用一次，若后台单次耗时过长会导致程序永远卡在后台进程中 */
-        /* 可以使用自定义异常函数替换while(1)从而便于检查 */
-        while(1);
-    }
+    // if(start_time - end_time >= BACKEND_LOOP_CYCLE_TIME ){
+    //     /* 后台程序死循环异常 */
+    //     /* 后台程序每BACKEND_LOOP_CYCLE_TIME时间调用一次，若后台单次耗时过长会导致程序永远卡在后台进程中 */
+    //     /* 可以使用自定义异常函数替换while(1)从而便于检查 */
+    //     while(1);
+    // }
 
 }
 
