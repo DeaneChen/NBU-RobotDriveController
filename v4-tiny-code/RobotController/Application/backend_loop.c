@@ -57,12 +57,6 @@ void Backend_Loop(void){
 
     /* 获取电池电压 */
     uint16_t vbat = Get_BattryVoltage();
-    /* 低电压报警 */
-    if (vbat <= LOW_3S_VBAT_ALARM_THRESHOLD && vbat >= DEBUG_V_WITHOUT_BAT || vbat <= LOW_4S_VBAT_ALARM_THRESHOLD && vbat >= MAX_3S_VBAT){
-        BEEP_ON();
-    }else if(IS_BEEP_ON()){
-        BEEP_OFF();
-    }
 
     /* 每100ms执行一次 */
     if(CYCLE_OK(100)){
@@ -71,7 +65,15 @@ void Backend_Loop(void){
     
     
     if(CYCLE_OK(1000)){
+        /* LED1闪烁 */
         FnLED1_SHIFT();
+
+        /* 低电压报警 */
+        if (vbat <= LOW_3S_VBAT_ALARM_THRESHOLD && vbat >= DEBUG_V_WITHOUT_BAT || vbat <= LOW_4S_VBAT_ALARM_THRESHOLD && vbat >= MAX_3S_VBAT){
+            BEEP_SHIFT(); /* 蜂鸣器间歇性提示 */
+        }else{
+            BEEP_OFF();  /* 关闭蜂鸣器 */
+        }
     }
 
     /* 每2000ms执行一次 */
@@ -86,7 +88,7 @@ void Backend_Loop(void){
         /* 后台程序死循环异常 */
         /* 后台程序每BACKEND_LOOP_CYCLE_TIME时间调用一次，若后台单次耗时过长会导致程序永远卡在后台进程中 */
         /* 可以使用自定义异常函数替换while(1)从而便于检查 */
-        while(1);
+        //while(1);
     }
 
 }
