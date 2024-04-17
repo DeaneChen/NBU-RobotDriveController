@@ -27,7 +27,7 @@
 /* 4S电池最高电压 单位mV */
 #define MAX_4S_VBAT (16800)
 /* 无电池调试电压 单位mV */
-#define DEBUG_V_WITHOUT_BAT (5000)
+#define DEBUG_V_WITHOUT_BAT (6000)
 /* $ 后台循环程序的调用时间周期，需根据中断周期设定 单位ms */
 #define BACKEND_LOOP_CYCLE_TIME   (20)
 

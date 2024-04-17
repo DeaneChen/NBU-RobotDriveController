@@ -850,7 +850,7 @@ int mpu_init(struct int_param_s *int_param)
  *                          accel mode.
  *  @return     0 if successful.
  */
-int mpu_lp_accel_mode(unsigned char rate)
+int mpu_lp_accel_mode(unsigned short rate)
 {
     unsigned char tmp[2];
 
@@ -2607,7 +2607,7 @@ int mpu_get_compass_fsr(unsigned short *fsr)
  *  @return     0 if successful.
  */
 int mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
-    unsigned char lpa_freq)
+    unsigned short lpa_freq)
 {
     unsigned char data[3];
 
